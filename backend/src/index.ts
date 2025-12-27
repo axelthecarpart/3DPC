@@ -16,9 +16,8 @@ app.get("/", (_req, res) => {
   res.send("3DPC API is running!");
 });
 
-
 app.use("/users", userRoutes);
-app.use("/pc-parts", partsRoutes);
+app.use("/", partsRoutes);
 app.use("/builds", buildsRoutes);
 
 const PORT = 5000;

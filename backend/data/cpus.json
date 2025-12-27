@@ -1,0 +1,18 @@
+[
+  {
+    "name": "AMD Ryzen\u2122 9 9950X3D\n",
+    "socket": "AM5",
+    "microarchitecture": "Zen 5",
+    "cores": 16,
+    "threads": 32,
+    "baseClock": "4.3",
+    "boostClock": "5.4",
+    "tdp": "170",
+    "l1Cache": "1280",
+    "l2Cache": "16",
+    "l3Cache": "128",
+    "manufacturer": "AMD",
+    "graphics": "AMD Radeon\u2122 Graphics",
+    "image": "/images/amd/ryzen/9950x3d.png"
+  }
+]
