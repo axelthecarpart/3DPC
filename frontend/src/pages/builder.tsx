@@ -17,8 +17,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { ButtonGroup } from "@/components/ui/button-group"
 import { Separator } from "@/components/ui/separator"
-import { Plus, Cpu, Gpu, MemoryStick, Fan, PcCase, CircuitBoard, HardDrive, Cable, LayoutGrid, LayoutList } from "lucide-react"
+import { Plus, Cpu, X, Gpu, MemoryStick, Fan, PcCase, CircuitBoard, HardDrive, Cable, LayoutGrid, LayoutList, Zap, Banknote } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -38,18 +39,19 @@ export default function BuilderPage() {
     const [components, setComponents] = useState<any[]>([])
     const [loading, setLoading] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
-    const [selectedCpu, setSelectedCpu] = useState<any>(null)
+    const [currentComponentType, setCurrentComponentType] = useState<string>('')
+    const [selectedComponents, setSelectedComponents] = useState<{[key: string]: any}>({})
 
     useEffect(() => {
-        if (isOpen) {
-            fetchComponents()
+        if (isOpen && currentComponentType) {
+            fetchComponents(currentComponentType)
         }
-    }, [isOpen])
+    }, [isOpen, currentComponentType])
 
-    const fetchComponents = async () => {
+    const fetchComponents = async (type: string) => {
         setLoading(true)
         try {
-            const response = await fetch('http://localhost:5000/pc-parts/cpu')
+            const response = await fetch(`http://localhost:5000/pc-parts/${type}`)
             const data = await response.json()
             setComponents(data.items || [])
         } catch (error) {
@@ -60,140 +62,166 @@ export default function BuilderPage() {
         }
     }
 
+    const handleOpenDialog = (type: string) => {
+        setCurrentComponentType(type)
+        setIsOpen(true)
+    }
+
     const handleSelectComponent = (component: any) => {
-        setSelectedCpu(component)
+        setSelectedComponents(prev => ({
+            ...prev,
+            [currentComponentType]: component
+        }))
         setIsOpen(false)
+    }
+
+    const getComponentLabel = (type: string) => {
+        const labels: {[key: string]: string} = {
+            'cpu': 'CPU',
+            'cpu-cooler': 'CPU Cooler',
+            'motherboard': 'Motherboard',
+            'ram': 'RAM',
+            'storage': 'Storage',
+            'gpu': 'GPU',
+            'case': 'Case',
+            'psu': 'PSU'
+        }
+        return labels[type] || type
     }
     return (
         <>
             <div>
                 <h1 className="text-2xl font-bold mb-4">PC Builder</h1>
             </div>
+            <div>
+                <ButtonGroup>
+                    <Button variant="outline"><Zap />100W</Button>
+                    <Button variant="outline"><Banknote />$1000</Button>
+                </ButtonGroup>
+            </div>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <div>
-                    <div className="flex items-center gap-4 justify-between">
+                    <Separator className="my-4" />
+                    <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <Cpu />
-                            <span>CPU</span>
+                            <span className="w-32 text-left">CPU</span>
+                            {selectedComponents['cpu'] && (
+                              <img
+                                src={"http://localhost:5000/data/cpus" + selectedComponents['cpu'].image}
+                                alt={selectedComponents['cpu'].name}
+                                className="h-16 w-16 object-contain rounded bg-white border"
+                              />
+                            )}
+                            <span>
+                              {selectedComponents['cpu'] ? selectedComponents['cpu'].name : ""}
+                            </span>
                         </div>
-                        <div>{selectedCpu ? selectedCpu.name : "Component Placeholder"}</div>
-                        <div className="ml-auto">
-                            <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)}>
-                                <Plus />
-                            </Button>
-                        </div>
+                        {selectedComponents['cpu'] ? (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() =>
+                              setSelectedComponents(prev => ({ ...prev, cpu: undefined }))
+                            }
+                            aria-label="Remove CPU"
+                          >
+                            <X />
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleOpenDialog('cpu')}
+                            aria-label="Add CPU"
+                          >
+                            <Plus />
+                          </Button>
+                        )}
                     </div>
                     <Separator className="my-4" />
-                    <div className="flex items-center gap-4 justify-between">
+                    <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <Fan />
-                            <span>CPU Cooler</span>
+                            <span className="w-32 text-left">CPU Cooler</span>
+                            <span>{selectedComponents['cpu-cooler'] ? selectedComponents['cpu-cooler'].name : ""}</span>
                         </div>
-                        <div>Component Placeholder</div>
-                        <div className="ml-auto">
-                            <DialogTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                    <Plus />
-                                </Button>
-                            </DialogTrigger>
-                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => handleOpenDialog('cpu-cooler')}>
+                            <Plus />
+                        </Button>
                     </div>
                     <Separator className="my-4" />
-                    <div className="flex items-center gap-4 justify-between">
+                    <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <CircuitBoard />
-                            <span>Motherboard</span>
+                            <span className="w-32 text-left">Motherboard</span>
+                            <span>{selectedComponents['motherboard'] ? selectedComponents['motherboard'].name : ""}</span>
                         </div>
-                        <div>Component Placeholder</div>
-                        <div className="ml-auto">
-                            <DialogTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                    <Plus />
-                                </Button>
-                            </DialogTrigger>
-                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => handleOpenDialog('motherboard')}>
+                            <Plus />
+                        </Button>
                     </div>
                     <Separator className="my-4" />
-                    <div className="flex items-center gap-4 justify-between">
+                    <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <MemoryStick />
-                            <span>RAM</span>
+                            <span className="w-32 text-left">RAM</span>
+                            <span>{selectedComponents['ram'] ? selectedComponents['ram'].name : ""}</span>
                         </div>
-                        <div>Component Placeholder</div>
-                        <div className="ml-auto">
-                            <DialogTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                    <Plus />
-                                </Button>
-                            </DialogTrigger>
-                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => handleOpenDialog('ram')}>
+                            <Plus />
+                        </Button>
                     </div>
                     <Separator className="my-4" />
-                    <div className="flex items-center gap-4 justify-between">
+                    <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <HardDrive />
-                            <span>Storage</span>
+                            <span className="w-32 text-left">Storage</span>
+                            <span>{selectedComponents['storage'] ? selectedComponents['storage'].name : ""}</span>
                         </div>
-                        <div>Component Placeholder</div>
-                        <div className="ml-auto">
-                            <DialogTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                    <Plus />
-                                </Button>
-                            </DialogTrigger>
-                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => handleOpenDialog('storage')}>
+                            <Plus />
+                        </Button>
                     </div>
                     <Separator className="my-4" />
-                    <div className="flex items-center gap-4 justify-between">
+                    <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <Gpu />
-                            <span>GPU</span>
+                            <span className="w-32 text-left">GPU</span>
+                            <span>{selectedComponents['gpu'] ? selectedComponents['gpu'].name : ""}</span>
                         </div>
-                        <div>Component Placeholder</div>
-                        <div className="ml-auto">
-                            <DialogTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                    <Plus />
-                                </Button>
-                            </DialogTrigger>
-                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => handleOpenDialog('gpu')}>
+                            <Plus />
+                        </Button>
                     </div>
                     <Separator className="my-4" />
-                    <div className="flex items-center gap-4 justify-between">
+                    <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <PcCase />
-                            <span>Case</span>
+                            <span className="w-32 text-left">Case</span>
+                            <span>{selectedComponents['case'] ? selectedComponents['case'].name : ""}</span>
                         </div>
-                        <div>Component Placeholder</div>
-                        <div className="ml-auto">
-                            <DialogTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                    <Plus />
-                                </Button>
-                            </DialogTrigger>
-                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => handleOpenDialog('case')}>
+                            <Plus />
+                        </Button>
                     </div>
                     <Separator className="my-4" />
-                    <div className="flex items-center gap-4 justify-between">
+                    <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <Cable />
-                            <span>PSU</span>
+                            <span className="w-32 text-left">Power Supply</span>
+                            <span>{selectedComponents['psu'] ? selectedComponents['psu'].name : ""}</span>
                         </div>
-                        <div>Component Placeholder</div>
-                        <div className="ml-auto">
-                            <DialogTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                    <Plus />
-                                </Button>
-                            </DialogTrigger>
-                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => handleOpenDialog('psu')}>
+                            <Plus />
+                        </Button>
                     </div>
                 </div>
                 <DialogContent className="sm:max-w-[1200px] w-full">
                     <DialogHeader>
-                        <DialogTitle>Select CPU</DialogTitle>
+                        <DialogTitle>Select {getComponentLabel(currentComponentType)}</DialogTitle>
                         <DialogDescription>
-                            {components.length} CPUs available
+                            {components.length} {getComponentLabel(currentComponentType)}s available
                         </DialogDescription>
                     </DialogHeader>
                     <div className="max-h-[600px] overflow-y-auto pr-2">

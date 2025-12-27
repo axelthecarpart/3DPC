@@ -1,8 +1,8 @@
-import { Router } from "express";
-import { getPartsByType } from "../controllers/partsController";
+import express from "express";
+import { getPartsByType, addPartByType } from "../controllers/partsController";
+const router = express.Router();
 
-const router = Router();
-
-router.get("/:type", getPartsByType); // /parts/cpu, /parts/gpu, etc.
+router.get("/pc-parts/:type", getPartsByType);
+router.post("/pc-parts/:type", addPartByType);
 
 export default router;
