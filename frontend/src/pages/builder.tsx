@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 
 export default function BuilderPage() {
     const [components, setComponents] = useState<any[]>([])
@@ -81,21 +81,36 @@ export default function BuilderPage() {
             'cpu-cooler': 'CPU Cooler',
             'motherboard': 'Motherboard',
             'ram': 'RAM',
-            'storage': 'Storage',
             'gpu': 'GPU',
             'case': 'Case',
             'psu': 'PSU'
         }
         return labels[type] || type
     }
+    const totalWattage = useMemo(() => {
+        return Object.values(selectedComponents).reduce((sum: number, comp: any) => {
+            if (!comp) return sum
+            const value = comp.tdp ?? comp.watt ?? comp.power ?? comp.powerDraw ?? 0
+            const n = typeof value === 'number' ? value : parseInt(String(value)) || 0
+            return sum + n
+        }, 0)
+    }, [selectedComponents])
+
+    const dataFolder = (type: string) => {
+        // Backend folders use some irregular names
+        if (type === 'psu') return 'power supplies'
+        if (type === 'cpu-cooler') return 'cpu coolers'
+        return `${type}s`
+    }
+
     return (
         <>
             <div>
-                <h1 className="text-2xl font-bold mb-4">PC Builder</h1>
+                <h1 className="text-2xl font-bold mt-8 mb-4">PC Builder</h1>
             </div>
             <div>
                 <ButtonGroup>
-                    <Button variant="outline"><Zap />100W</Button>
+                    <Button variant="outline"><Zap />{totalWattage}W</Button>
                     <Button variant="outline"><Banknote />$1000</Button>
                 </ButtonGroup>
             </div>
@@ -106,13 +121,13 @@ export default function BuilderPage() {
                         <div className="flex items-center gap-2">
                             <Cpu />
                             <span className="w-32 text-left">CPU</span>
-                            {selectedComponents['cpu'] && (
-                              <img
-                                src={"http://localhost:5000/data/cpus" + selectedComponents['cpu'].image}
-                                alt={selectedComponents['cpu'].name}
-                                className="h-16 w-16 object-contain rounded bg-white border"
-                              />
-                            )}
+                                                        {selectedComponents['cpu'] && (
+                                                            <img
+                                                                src={`http://localhost:5000/data/${dataFolder('cpu')}` + selectedComponents['cpu'].image}
+                                                                alt={selectedComponents['cpu'].name}
+                                                                className="h-16 w-16 object-contain rounded bg-white border"
+                                                            />
+                                                        )}
                             <span>
                               {selectedComponents['cpu'] ? selectedComponents['cpu'].name : ""}
                             </span>
@@ -175,7 +190,7 @@ export default function BuilderPage() {
                     <Separator className="my-4" />
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <HardDrive />
+                            <MemoryStick />
                             <span className="w-32 text-left">Storage</span>
                             <span>{selectedComponents['storage'] ? selectedComponents['storage'].name : ""}</span>
                         </div>
@@ -184,6 +199,7 @@ export default function BuilderPage() {
                         </Button>
                     </div>
                     <Separator className="my-4" />
+
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <Gpu />
@@ -236,7 +252,7 @@ export default function BuilderPage() {
                                                 <div className="bg-white w-full p-4 h-[140px] flex items-center justify-center">
                                                     {component.image && (
                                                         <img 
-                                                            src={"http://localhost:5000/data/cpus" + component.image}
+                                                            src={`http://localhost:5000/data/${dataFolder(currentComponentType)}` + component.image}
                                                             alt={component.name}
                                                             className="max-w-full max-h-full object-contain"
                                                         />
@@ -253,7 +269,9 @@ export default function BuilderPage() {
                                                 {component.integratedGraphics && <ItemDescription>Integrated Graphics: {component.integratedGraphics}</ItemDescription>}
                                             </ItemContent>
                                             <ItemActions />
-                                            <ItemFooter className="p-4"><Button size="sm" variant="outline" onClick={() => handleSelectComponent(component)}>Add</Button></ItemFooter>
+                                            <ItemFooter className="p-4">
+                                                <Button size="sm" variant="outline" onClick={() => handleSelectComponent(component)}>Add</Button>
+                                            </ItemFooter>
                                         </Item>
                                     </div>
                                 ))}
@@ -264,11 +282,11 @@ export default function BuilderPage() {
                             </div>
                         )}
                     </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsOpen(false)}>
-                            Cancel
-                        </Button>
-                    </DialogFooter>
+                                        <DialogFooter>
+                                            <Button variant="outline" onClick={() => setIsOpen(false)}>
+                                                Cancel
+                                            </Button>
+                                        </DialogFooter>
                 </DialogContent>
             </Dialog>
             <Separator className="my-4" />

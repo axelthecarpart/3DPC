@@ -5,7 +5,35 @@ import path from "path";
 export const getPartsByType = (req: Request, res: Response) => {
   try {
     const { type } = req.params; // cpu, gpu, ram, etc.
-    const filePath = path.join(__dirname, `../../data/${type}s/${type}s.json`);
+    const resolveFilePath = (t: string) => {
+      const folderMap: { [k: string]: string } = {
+        psu: 'power supplies',
+        'cpu-cooler': 'cpu coolers',
+        case: 'cases',
+        motherboard: 'motherboards',
+        storage: 'storage'
+      }
+
+      const candidates: string[] = []
+      const mapped = folderMap[t]
+      if (mapped) {
+        candidates.push(path.join(__dirname, `../../data/${mapped}/${mapped}.json`))
+        candidates.push(path.join(__dirname, `../../data/${mapped}/${t}.json`))
+      }
+
+      candidates.push(path.join(__dirname, `../../data/${t}s/${t}s.json`))
+      candidates.push(path.join(__dirname, `../../data/${t}s/${t}.json`))
+      candidates.push(path.join(__dirname, `../../data/${t}/${t}.json`))
+      candidates.push(path.join(__dirname, `../../data/${t}/${t}s.json`))
+
+      for (const p of candidates) {
+        if (fs.existsSync(p)) return p
+      }
+      return null
+    }
+
+    const filePath = resolveFilePath(type)
+    if (!filePath) throw new Error(`Parts file not found for type: ${type}`)
 
     const parts = JSON.parse(fs.readFileSync(filePath, "utf-8"));
 
@@ -20,7 +48,35 @@ export const getPartsByType = (req: Request, res: Response) => {
 export const addPartByType = (req: Request, res: Response) => {
   try {
     const { type } = req.params;
-    const filePath = path.join(__dirname, `../../data/${type}s/${type}s.json`);
+    const resolveFilePath = (t: string) => {
+      const folderMap: { [k: string]: string } = {
+        psu: 'power supplies',
+        'cpu-cooler': 'cpu coolers',
+        case: 'cases',
+        motherboard: 'motherboards',
+        storage: 'storage'
+      }
+
+      const candidates: string[] = []
+      const mapped = folderMap[t]
+      if (mapped) {
+        candidates.push(path.join(__dirname, `../../data/${mapped}/${mapped}.json`))
+        candidates.push(path.join(__dirname, `../../data/${mapped}/${t}.json`))
+      }
+
+      candidates.push(path.join(__dirname, `../../data/${t}s/${t}s.json`))
+      candidates.push(path.join(__dirname, `../../data/${t}s/${t}.json`))
+      candidates.push(path.join(__dirname, `../../data/${t}/${t}.json`))
+      candidates.push(path.join(__dirname, `../../data/${t}/${t}s.json`))
+
+      for (const p of candidates) {
+        if (fs.existsSync(p)) return p
+      }
+      return null
+    }
+
+    const filePath = resolveFilePath(type)
+    if (!filePath) throw new Error(`Parts file not found for type: ${type}`)
 
     // Read existing parts
     const parts = JSON.parse(fs.readFileSync(filePath, "utf-8"));
