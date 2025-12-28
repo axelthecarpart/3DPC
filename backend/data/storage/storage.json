@@ -1,0 +1,44 @@
+[
+    {
+        "name": "Samsung 980 Pro",
+        "formFactor": "M.2-2280",
+        "interface": "M.2 PCIe 4.0 x4",
+        "variants": [
+            {
+                "size": "1TB", 
+                "readSpeed": "7000",
+                "writeSpeed": "5000",
+                "cache": "512",
+                "image": "/images/samsung/980 pro/980-pro-1tb.jpg"
+            },
+            {
+                "size": "2TB", 
+                "readSpeed": "7000", 
+                "writeSpeed": "5100", 
+                "cache": "1024",
+                "image": "/images/samsung/980 pro/980-pro-2tb.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Samsung 980 Pro with Heatsink",
+        "formFactor": "M.2-2280",
+        "interface": "M.2 PCIe 4.0 x4",
+        "variants": [
+            {
+                "size": "1TB", 
+                "readSpeed": "7000",
+                "writeSpeed": "5000",
+                "cache": "512",
+                "image": "/images/samsung/980 pro/980-pro-1tb-heatsink.jpg"
+            },
+            {
+                "size": "2TB", 
+                "readSpeed": "7000", 
+                "writeSpeed": "5100", 
+                "cache": "1024",
+                "image": "/images/samsung/980 pro/980-pro-2tb-heatsink.jpg"
+            }
+        ]
+    }
+]

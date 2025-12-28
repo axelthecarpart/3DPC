@@ -1,10 +1,12 @@
 import * as React from "react"
 import { Link } from "react-router-dom"
+import { Separator } from "@/components/ui/separator"
+
 import { CircleCheckIcon, CircleHelpIcon, CircleIcon } from "lucide-react"
-
 import { ModeToggle } from "./mode-toggle"
-
 import { useIsMobile } from "@/hooks/use-mobile"
+import logoLight from "@/assets/logo-light.svg"
+import logoDark from "@/assets/logo-dark.svg"
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -14,50 +16,23 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
+import { Badge } from "@/components/ui/badge"
 
-const components: { title: string; href: string; description: string }[] = [
-  {
-    title: "Alert Dialog",
-    href: "/docs/primitives/alert-dialog",
-    description:
-      "A modal dialog that interrupts the user with important content and expects a response.",
-  },
-  {
-    title: "Hover Card",
-    href: "/docs/primitives/hover-card",
-    description:
-      "For sighted users to preview content available behind a link.",
-  },
-  {
-    title: "Progress",
-    href: "/docs/primitives/progress",
-    description:
-      "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-  },
-  {
-    title: "Scroll-area",
-    href: "/docs/primitives/scroll-area",
-    description: "Visually or semantically separates content.",
-  },
-  {
-    title: "Tabs",
-    href: "/docs/primitives/tabs",
-    description:
-      "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-  },
-  {
-    title: "Tooltip",
-    href: "/docs/primitives/tooltip",
-    description:
-      "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  },
-]
 
 export function Header() {
   const isMobile = useIsMobile()
   return (
     <NavigationMenu viewport={isMobile}>
       <NavigationMenuList className="flex-wrap">
+        <NavigationMenuItem>
+            <Link to="/">
+              <img src={logoLight} alt="Logo" className="h-8 w-auto block dark:hidden" />
+              <img src={logoDark} alt="Logo" className="h-8 w-auto hidden dark:block" />
+            </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <Badge variant="secondary">Alpha v0.0.1</Badge>
+        </NavigationMenuItem>
         <NavigationMenuItem>
             <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
                 <Link to="/builder">Builder</Link>
