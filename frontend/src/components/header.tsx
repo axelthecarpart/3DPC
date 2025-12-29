@@ -1,4 +1,4 @@
-import * as React from "react"
+//import * as React from "react"
 import { Link } from "react-router-dom"
 import { ModeToggle } from "./mode-toggle"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -6,11 +6,9 @@ import logoLight from "@/assets/logo-light.svg"
 import logoDark from "@/assets/logo-dark.svg"
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { Badge } from "@/components/ui/badge"
@@ -46,7 +44,7 @@ export function Header() {
   )
 }
 
-function ListItem({
+/*function ListItem({
   title,
   children,
   href,
@@ -65,3 +63,4 @@ function ListItem({
     </li>
   )
 }
+*/

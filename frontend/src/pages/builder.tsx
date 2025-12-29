@@ -8,31 +8,18 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item"
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { ButtonGroup } from "@/components/ui/button-group"
 import { Separator } from "@/components/ui/separator"
-import { Plus, Cpu, X, Gpu, MemoryStick, Fan, PcCase, CircuitBoard, HardDrive, Cable, LayoutGrid, LayoutList, Zap, Banknote } from "lucide-react"
+import { Plus, Cpu, X, Gpu, MemoryStick, Fan, PcCase, CircuitBoard, Cable, Zap, Banknote } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { useState, useEffect, useMemo } from "react"
 
 export default function BuilderPage() {
@@ -243,14 +230,14 @@ export default function BuilderPage() {
                         </Button>
                     </div>
                 </div>
-                <DialogContent className="sm:max-w-[1200px] w-full">
+                <DialogContent className="sm:max-w-300 w-full">
                     <DialogHeader>
                         <DialogTitle>Select {getComponentLabel(currentComponentType)}</DialogTitle>
                         <DialogDescription>
                             {components.length} {getComponentLabel(currentComponentType)}s available
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="max-h-[600px] overflow-y-auto pr-2">
+                    <div className="max-h-150 overflow-y-auto pr-2">
                         {loading ? (
                             <div className="text-center py-8">Loading components...</div>
                         ) : components.length > 0 ? (
@@ -259,7 +246,7 @@ export default function BuilderPage() {
                                     <div key={index}>
                                         <Item variant="outline" className="p-0 overflow-hidden">
                                             <ItemHeader className="p-0 m-0">
-                                                <div className="bg-white w-full p-4 h-[140px] flex items-center justify-center">
+                                                <div className="bg-white w-full p-4 h-35 flex items-center justify-center">
                                                     {component.image && (
                                                         <img 
                                                             src={`http://localhost:5000/data/${dataFolder(currentComponentType)}` + component.image}
