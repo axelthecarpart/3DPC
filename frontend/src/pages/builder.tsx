@@ -87,12 +87,22 @@ export default function BuilderPage() {
         }
         return labels[type] || type
     }
+    const getMaxTdp = (comp: any) => {
+        if (!comp) return 0
+        const keys = ['maxTdp','tdpMax','tdp_peak','tdpPeak','tdp_boost','boostTdp','peakPower','powerMax','maxPower','powerPeak','tdp','watt','power','powerDraw']
+        for (const k of keys) {
+            const v = comp[k]
+            if (v !== undefined && v !== null && v !== '') {
+                const n = typeof v === 'number' ? v : parseFloat(String(v).replace(/[^0-9\.]/g, ''))
+                if (!Number.isNaN(n) && n > 0) return n
+            }
+        }
+        return 0
+    }
+
     const totalWattage = useMemo(() => {
         return Object.values(selectedComponents).reduce((sum: number, comp: any) => {
-            if (!comp) return sum
-            const value = comp.tdp ?? comp.watt ?? comp.power ?? comp.powerDraw ?? 0
-            const n = typeof value === 'number' ? value : parseInt(String(value)) || 0
-            return sum + n
+            return sum + getMaxTdp(comp)
         }, 0)
     }, [selectedComponents])
 
@@ -265,7 +275,7 @@ export default function BuilderPage() {
                                                 {component.cores && <ItemDescription>Core Count: {component.cores}</ItemDescription>}
                                                 {component.baseClock && <ItemDescription>Base Clock: {component.baseClock} GHz</ItemDescription>}
                                                 {component.boostClock && <ItemDescription>Boost Clock: {component.boostClock} GHz</ItemDescription>}
-                                                {component.tdp && <ItemDescription>TDP: {component.tdp}W</ItemDescription>}
+                                                {component.baseTdp && <ItemDescription>Base TDP: {component.baseTdp}W</ItemDescription>}
                                                 {component.integratedGraphics && <ItemDescription>Integrated Graphics: {component.integratedGraphics}</ItemDescription>}
                                             </ItemContent>
                                             <ItemActions />
