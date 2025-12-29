@@ -86,7 +86,7 @@
     "manufacturer": "AMD",
     "graphics": "AMD Radeon Graphics",
     "image": "/images/amd/ryzen/9800x3d.png",
-    "maxTdp": "",
+    "maxTdp": "162",
     "maxMemory": "192"
   },
   {
@@ -104,7 +104,7 @@
     "manufacturer": "AMD",
     "graphics": "AMD Radeon Graphics",
     "image": "/images/amd/ryzen/9700x.png",
-    "maxTdp": "",
+    "maxTdp": "140",
     "maxMemory": "192"
   },
   {
@@ -122,7 +122,7 @@
     "manufacturer": "AMD",
     "graphics": "AMD Radeon Graphics",
     "image": "/images/amd/ryzen/9600x.png",
-    "maxTdp": "",
+    "maxTdp": "140",
     "maxMemory": "192"
   },
   {
@@ -140,7 +140,7 @@
     "manufacturer": "AMD",
     "graphics": "AMD Radeon Graphics",
     "image": "/images/amd/ryzen/9600.jpg",
-    "maxTdp": "",
+    "maxTdp": "140",
     "maxMemory": "192"
   },
   {
@@ -158,7 +158,7 @@
     "manufacturer": "AMD",
     "graphics": "AMD Radeon Graphics",
     "image": "/images/amd/ryzen/7950x3d.png",
-    "maxTdp": "",
+    "maxTdp": "162",
     "maxMemory": "128"
   },
   {
@@ -176,7 +176,7 @@
     "manufacturer": "AMD",
     "graphics": "AMD Radeon Graphics",
     "image": "/images/amd/ryzen/7950x.png",
-    "maxTdp": "",
+    "maxTdp": "230",
     "maxMemory": "128"
   },
   {
@@ -194,7 +194,7 @@
     "manufacturer": "AMD",
     "graphics": "AMD Radeon Graphics",
     "image": "/images/amd/ryzen/7900x3d.png",
-    "maxTdp": "",
+    "maxTdp": "162",
     "maxMemory": "128"
   },
   {
@@ -212,7 +212,7 @@
     "manufacturer": "AMD",
     "graphics": "AMD Radeon Graphics",
     "image": "/images/amd/ryzen/7900x.png",
-    "maxTdp": "",
+    "maxTdp": "230",
     "maxMemory": "128"
   },
   {
@@ -230,7 +230,7 @@
     "manufacturer": "AMD",
     "graphics": "AMD Radeon Graphics",
     "image": "/images/amd/ryzen/7900.png",
-    "maxTdp": "",
+    "maxTdp": "88",
     "maxMemory": "128"
   },
   {
@@ -248,7 +248,7 @@
     "manufacturer": "AMD",
     "graphics": "AMD Radeon Graphics",
     "image": "/images/amd/ryzen/7800x3d.png",
-    "maxTdp": "",
+    "maxTdp": "162",
     "maxMemory": "128"
   },
   {
@@ -266,7 +266,7 @@
     "manufacturer": "AMD",
     "graphics": "AMD Radeon Graphics",
     "image": "/images/amd/ryzen/7700x.png",
-    "maxTdp": "",
+    "maxTdp": "142",
     "maxMemory": "128"
   },
   {
@@ -284,7 +284,7 @@
     "manufacturer": "AMD",
     "graphics": "AMD Radeon Graphics",
     "image": "/images/amd/ryzen/7700.jpg",
-    "maxTdp": "",
+    "maxTdp": "88",
     "maxMemory": "128"
   },
   {
@@ -302,7 +302,7 @@
     "manufacturer": "AMD",
     "graphics": "AMD Radeon Graphics",
     "image": "/images/amd/ryzen/7600x3d.jpg",
-    "maxTdp": "",
+    "maxTdp": "105",
     "maxMemory": "128"
   },
   {
@@ -320,7 +320,7 @@
     "manufacturer": "AMD",
     "graphics": "AMD Radeon Graphics",
     "image": "/images/amd/ryzen/7600x.png",
-    "maxTdp": "",
+    "maxTdp": "142",
     "maxMemory": "128"
   },
   {
@@ -338,7 +338,7 @@
     "manufacturer": "AMD",
     "graphics": "AMD Radeon Graphics",
     "image": "/images/amd/ryzen/7600.png",
-    "maxTdp": "",
+    "maxTdp": "88",
     "maxMemory": "128"
   },
   {
@@ -356,7 +356,7 @@
     "manufacturer": "AMD",
     "graphics": "AMD Radeon Graphics",
     "image": "/images/amd/ryzen/7500x3d.jpg",
-    "maxTdp": "",
+    "maxTdp": "88",
     "maxMemory": "128"
   },
   {
@@ -374,7 +374,7 @@
     "manufacturer": "AMD",
     "graphics": "None",
     "image": "/images/amd/ryzen/7500f.jpg",
-    "maxTdp": "",
+    "maxTdp": "88",
     "maxMemory": "128"
   },
   {
@@ -392,7 +392,7 @@
     "manufacturer": "AMD",
     "graphics": "None",
     "image": "/images/amd/ryzen/7400f.jpg",
-    "maxTdp": "",
+    "maxTdp": "88",
     "maxMemory": "128"
   },
   {
@@ -410,7 +410,7 @@
     "manufacturer": "AMD",
     "graphics": "AMD Radeon Graphics",
     "image": "/images/amd/ryzen/7400.jpg",
-    "maxTdp": "",
+    "maxTdp": "88",
     "maxMemory": "128"
   },
   {
@@ -428,7 +428,7 @@
     "manufacturer": "Intel",
     "graphics": "Intel UHD Graphics 770",
     "image": "/images/intel/core/14900ks.jpg",
-    "maxTdp": "",
+    "maxTdp": "253",
     "maxMemory": "192"
   },
   {
@@ -446,7 +446,7 @@
     "manufacturer": "Intel",
     "graphics": "Intel UHD Graphics 770",
     "image": "/images/intel/core/14900k.jpg",
-    "maxTdp": "",
+    "maxTdp": "253",
     "maxMemory": "192"
   },
   {
