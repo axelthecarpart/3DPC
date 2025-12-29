@@ -1,8 +1,5 @@
 import * as React from "react"
 import { Link } from "react-router-dom"
-import { Separator } from "@/components/ui/separator"
-
-import { CircleCheckIcon, CircleHelpIcon, CircleIcon } from "lucide-react"
 import { ModeToggle } from "./mode-toggle"
 import { useIsMobile } from "@/hooks/use-mobile"
 import logoLight from "@/assets/logo-light.svg"
