@@ -1,0 +1,258 @@
+[
+    {
+        "type": "cpu",
+        "label": "CPU",
+        "filters": [
+            {
+                "id": "manufacturer",
+                "label": "Manufacturer",
+                "type": "checkbox",
+                "options": ["AMD", "Intel"]
+            },
+            {
+                "id": "socket",
+                "label": "Socket",
+                "type": "checkbox",
+                "options": ["AM5", "LGA1700", "TR5", "sTRX4"]
+            },
+            {
+                "id": "cores",
+                "label": "Cores",
+                "type": "range",
+                "min": 2,
+                "max": 64,
+                "step": 1
+            },
+            {
+                "id": "threads",
+                "label": "Threads",
+                "type": "range",
+                "min": 4,
+                "max": 128,
+                "step": 2
+            },
+            {
+                "id": "tdp",
+                "label": "TDP (W)",
+                "type": "range",
+                "min": 35,
+                "max": 350,
+                "step": 5
+            },
+            {
+                "id": "hasGpu",
+                "label": "Integrated Graphics",
+                "type": "checkbox",
+                "options": ["Yes", "No"]
+            }
+        ]
+    },
+    {
+        "type": "gpu",
+        "label": "GPU",
+        "filters": [
+            {
+                "id": "manufacturer",
+                "label": "Manufacturer",
+                "type": "checkbox",
+                "options": ["NVIDIA", "AMD", "Intel"]
+            },
+            {
+                "id": "chipset",
+                "label": "Chipset",
+                "type": "checkbox",
+                "options": ["RTX 50", "RTX 40", "RX 7000", "ARC"]
+            },
+            {
+                "id": "vram",
+                "label": "VRAM (GB)",
+                "type": "range",
+                "min": 4,
+                "max": 32,
+                "step": 1
+            },
+            {
+                "id": "tdp",
+                "label": "Power (W)",
+                "type": "range",
+                "min": 75,
+                "max": 600,
+                "step": 5
+            }
+        ]
+    },
+    {
+        "type": "motherboard",
+        "label": "Motherboard",
+        "filters": [
+            {
+                "id": "manufacturer",
+                "label": "Manufacturer",
+                "type": "checkbox",
+                "options": ["ASUS", "MSI", "Gigabyte", "ASRock"]
+            },
+            {
+                "id": "socket",
+                "label": "Socket",
+                "type": "checkbox",
+                "options": ["AM5", "LGA1700", "TR5"]
+            },
+            {
+                "id": "formFactor",
+                "label": "Form Factor",
+                "type": "checkbox",
+                "options": ["ATX", "Micro-ATX", "Mini-ITX", "E-ATX"]
+            },
+            {
+                "id": "chipset",
+                "label": "Chipset",
+                "type": "checkbox",
+                "options": ["X870", "B850", "Z890", "B860", "H810"]
+            }
+        ]
+    },
+    {
+        "type": "ram",
+        "label": "Memory",
+        "filters": [
+            {
+                "id": "capacity",
+                "label": "Capacity (GB)",
+                "type": "range",
+                "min": 8,
+                "max": 192,
+                "step": 8
+            },
+            {
+                "id": "sticks",
+                "label": "Modules",
+                "type": "range",
+                "min": 1,
+                "max": 8,
+                "step": 1
+            },
+            {
+                "id": "speed",
+                "label": "Speed (MT/s)",
+                "type": "range",
+                "min": 4800,
+                "max": 8400,
+                "step": 200
+            },
+            {
+                "id": "type",
+                "label": "Type",
+                "type": "checkbox",
+                "options": ["DDR4", "DDR5"]
+            }
+        ]
+    },
+    {
+        "type": "storage",
+        "label": "Storage",
+        "filters": [
+            {
+                "id": "kind",
+                "label": "Type",
+                "type": "checkbox",
+                "options": ["NVMe", "SATA SSD", "HDD"]
+            },
+            {
+                "id": "capacity",
+                "label": "Capacity (TB)",
+                "type": "range",
+                "min": 0.25,
+                "max": 8,
+                "step": 0.25
+            },
+            {
+                "id": "readSpeed",
+                "label": "Read (MB/s)",
+                "type": "range",
+                "min": 500,
+                "max": 14000,
+                "step": 500
+            }
+        ]
+    },
+    {
+        "type": "psu",
+        "label": "Power Supply",
+        "filters": [
+            {
+                "id": "wattage",
+                "label": "Wattage",
+                "type": "range",
+                "min": 450,
+                "max": 1600,
+                "step": 50
+            },
+            {
+                "id": "efficiency",
+                "label": "Efficiency",
+                "type": "checkbox",
+                "options": ["80+ Bronze", "80+ Silver", "80+ Gold", "80+ Platinum", "80+ Titanium"]
+            },
+            {
+                "id": "modularity",
+                "label": "Modularity",
+                "type": "checkbox",
+                "options": ["Non-modular", "Semi-modular", "Fully modular"]
+            }
+        ]
+    },
+    {
+        "type": "case",
+        "label": "Case",
+        "filters": [
+            {
+                "id": "formFactor",
+                "label": "Form Factor",
+                "type": "checkbox",
+                "options": ["ATX", "Micro-ATX", "Mini-ITX", "E-ATX"]
+            },
+            {
+                "id": "gpuLength",
+                "label": "GPU Clearance (mm)",
+                "type": "range",
+                "min": 250,
+                "max": 450,
+                "step": 5
+            },
+            {
+                "id": "cooling",
+                "label": "Cooling",
+                "type": "checkbox",
+                "options": ["Airflow", "Silent", "Included AIO"]
+            }
+        ]
+    },
+    {
+        "type": "cpu-cooler",
+        "label": "CPU Cooler",
+        "filters": [
+            {
+                "id": "type",
+                "label": "Type",
+                "type": "checkbox",
+                "options": ["Air", "AIO 240mm", "AIO 360mm", "AIO 420mm"]
+            },
+            {
+                "id": "tdp",
+                "label": "TDP Support (W)",
+                "type": "range",
+                "min": 95,
+                "max": 400,
+                "step": 5
+            },
+            {
+                "id": "height",
+                "label": "Height (mm)",
+                "type": "range",
+                "min": 120,
+                "max": 190,
+                "step": 1
+            }
+        ]
+    }
+]
