@@ -26,7 +26,7 @@ export function Header() {
             </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Badge variant="secondary">Alpha v0.0.1</Badge>
+          <Badge variant="secondary">Alpha v0.0.2</Badge>
         </NavigationMenuItem>
         <NavigationMenuItem>
             <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
