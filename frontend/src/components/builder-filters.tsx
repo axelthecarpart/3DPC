@@ -7,9 +7,10 @@ import filterConfig from "../components/builder-filters.json"
 interface BuilderFiltersProps {
   componentType: string
   onFilterChange?: (filters: any) => void
+  components?: any[]
 }
 
-export function BuilderFilters({ componentType, onFilterChange }: BuilderFiltersProps) {
+export function BuilderFilters({ componentType, onFilterChange, components = [] }: BuilderFiltersProps) {
   const [filterValues, setFilterValues] = useState<Record<string, any>>({})
 
   const config = filterConfig.find((c) => c.type === componentType)
@@ -22,6 +23,26 @@ export function BuilderFilters({ componentType, onFilterChange }: BuilderFilters
 
   if (!config) {
     return null
+  }
+
+  // Get unique sorted values for a numeric field
+  const getUniqueValues = (fieldName: string): number[] => {
+    const values = components
+      .map(comp => {
+        const val = comp[fieldName]
+        return typeof val === 'number' ? val : parseInt(val || '0')
+      })
+      .filter(val => !isNaN(val) && val > 0)
+    
+    return [...new Set(values)].sort((a, b) => a - b)
+  }
+
+  // Get the closest valid value from the unique values array
+  const getClosestValue = (value: number, validValues: number[]): number => {
+    if (validValues.length === 0) return value
+    return validValues.reduce((prev, curr) => 
+      Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev
+    )
   }
 
   const handleCheckboxChange = (filterId: string, option: string, checked: boolean) => {
@@ -74,18 +95,58 @@ export function BuilderFilters({ componentType, onFilterChange }: BuilderFilters
                 )}
                 {filter.type === "range" && (
                   <div className="space-y-2">
-                    <Slider
-                      min={filter.min}
-                      max={filter.max}
-                      step={filter.step}
-                      value={filterValues[filter.id] || [filter.min || 0, filter.max || 100]}
-                      onValueChange={(values) => handleRangeChange(filter.id, values)}
-                      className="w-full"
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>{filterValues[filter.id]?.[0] ?? filter.min}</span>
-                      <span>{filterValues[filter.id]?.[1] ?? filter.max}</span>
-                    </div>
+                    {(() => {
+                      // Get unique values for this field
+                      const uniqueValues = getUniqueValues(filter.id)
+                      
+                      if (uniqueValues.length === 0) {
+                        // Fallback to default behavior if no data
+                        const minVal = filter.min || 0
+                        const maxVal = filter.max || 100
+                        return (
+                          <>
+                            <Slider
+                              min={minVal}
+                              max={maxVal}
+                              step={filter.step}
+                              value={filterValues[filter.id] || [minVal, maxVal]}
+                              onValueChange={(values) => handleRangeChange(filter.id, values)}
+                              className="w-full"
+                            />
+                            <div className="flex justify-between text-xs text-muted-foreground">
+                              <span>{filterValues[filter.id]?.[0] ?? minVal}</span>
+                              <span>{filterValues[filter.id]?.[1] ?? maxVal}</span>
+                            </div>
+                          </>
+                        )
+                      }
+                      
+                      // Use indices for linear movement
+                      const currentValues = filterValues[filter.id]
+                      const minIndex = currentValues ? uniqueValues.indexOf(currentValues[0]) : 0
+                      const maxIndex = currentValues ? uniqueValues.indexOf(currentValues[1]) : uniqueValues.length - 1
+                      
+                      return (
+                        <>
+                          <Slider
+                            min={0}
+                            max={uniqueValues.length - 1}
+                            step={1}
+                            value={[minIndex, maxIndex]}
+                            onValueChange={(indices) => {
+                              // Map indices back to actual values
+                              const actualValues = [uniqueValues[indices[0]], uniqueValues[indices[1]]]
+                              handleRangeChange(filter.id, actualValues)
+                            }}
+                            className="w-full"
+                          />
+                          <div className="flex justify-between text-xs text-muted-foreground">
+                            <span>{uniqueValues[minIndex]}</span>
+                            <span>{uniqueValues[maxIndex]}</span>
+                          </div>
+                        </>
+                      )
+                    })()}
                   </div>
                 )}
               </div>
