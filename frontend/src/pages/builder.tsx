@@ -8,6 +8,7 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item"
+import { BuilderFilters } from "@/components/builder-filters"
 import { ButtonGroup } from "@/components/ui/button-group"
 import { Separator } from "@/components/ui/separator"
 import { Plus, Cpu, X, Gpu, MemoryStick, Fan, PcCase, CircuitBoard, Cable, Zap, Banknote } from "lucide-react"
@@ -28,6 +29,7 @@ export default function BuilderPage() {
     const [isOpen, setIsOpen] = useState(false)
     const [currentComponentType, setCurrentComponentType] = useState<string>('')
     const [selectedComponents, setSelectedComponents] = useState<{[key: string]: any}>({})
+    const [filters, setFilters] = useState<Record<string, any>>({})
 
     useEffect(() => {
         if (isOpen && currentComponentType) {
@@ -52,6 +54,7 @@ export default function BuilderPage() {
     const handleOpenDialog = (type: string) => {
         setCurrentComponentType(type)
         setIsOpen(true)
+        setFilters({})
     }
 
     const handleSelectComponent = (component: any) => {
@@ -61,6 +64,92 @@ export default function BuilderPage() {
         }))
         setIsOpen(false)
     }
+
+    const handleFilterChange = (newFilters: Record<string, any>) => {
+        setFilters(newFilters)
+    }
+
+    const filterComponents = (components: any[], filters: Record<string, any>) => {
+        console.log('Filtering with filters:', filters)
+        return components.filter((component) => {
+            // Check each filter
+            for (const [filterId, filterValue] of Object.entries(filters)) {
+                console.log(`Checking filter ${filterId}:`, filterValue)
+                // Skip empty filters
+                if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0)) {
+                    console.log(`Skipping empty filter ${filterId}`)
+                    continue
+                }
+
+                // Handle range filters (arrays with [min, max]) - CHECK THIS FIRST!
+                if (Array.isArray(filterValue) && filterValue.length === 2 && typeof filterValue[0] === 'number' && typeof filterValue[1] === 'number') {
+                    const [min, max] = filterValue
+                    
+                    // Cores filter
+                    if (filterId === 'cores') {
+                        const cores = typeof component.cores === 'number' ? component.cores : parseInt(component.cores || '0')
+                        console.log(`Checking cores: ${cores} against range [${min}, ${max}]`)
+                        if (cores < min || cores > max) return false
+                    }
+                    // Threads filter
+                    else if (filterId === 'threads') {
+                        const threads = typeof component.threads === 'number' ? component.threads : parseInt(component.threads || '0')
+                        console.log(`Checking threads: ${threads} against range [${min}, ${max}]`)
+                        if (threads < min || threads > max) return false
+                    }
+                    // TDP filter
+                    else if (filterId === 'tdp') {
+                        const tdpValue = component.baseTdp || component.tdp || '0'
+                        const tdp = typeof tdpValue === 'number' ? tdpValue : parseInt(tdpValue)
+                        console.log(`Checking tdp: ${tdp} against range [${min}, ${max}]`)
+                        if (tdp < min || tdp > max) return false
+                    }
+                }
+                // Handle checkbox filters (arrays)
+                else if (Array.isArray(filterValue) && filterValue.length > 0) {
+                    // Manufacturer filter
+                    if (filterId === 'manufacturer') {
+                        const componentManufacturer = component.manufacturer || component.brand || ''
+                        if (!filterValue.some(v => componentManufacturer.toLowerCase().includes(v.toLowerCase()))) {
+                            return false
+                        }
+                    }
+                    // Socket filter
+                    else if (filterId === 'socket') {
+                        const componentSocket = component.socket || ''
+                        if (!filterValue.includes(componentSocket)) {
+                            return false
+                        }
+                    }
+                    // Has GPU filter (integrated graphics)
+                    else if (filterId === 'hasGpu') {
+                        const hasIntegratedGraphics = component.graphics && component.graphics !== 'None' && component.graphics !== ''
+                        const wantsGpu = filterValue.includes('Yes')
+                        const wantsNoGpu = filterValue.includes('No')
+                        
+                        // If both or neither are selected, show all
+                        if ((wantsGpu && wantsNoGpu) || (!wantsGpu && !wantsNoGpu)) {
+                            // Show all
+                        }
+                        // If only wants GPU, show only those with integrated graphics
+                        else if (wantsGpu && !wantsNoGpu) {
+                            if (!hasIntegratedGraphics) return false
+                        }
+                        // If only wants no GPU, show only those without integrated graphics
+                        else if (!wantsGpu && wantsNoGpu) {
+                            if (hasIntegratedGraphics) return false
+                        }
+                    }
+                }
+            }
+            
+            return true
+        })
+    }
+
+    const filteredComponents = useMemo(() => {
+        return filterComponents(components, filters)
+    }, [components, filters])
 
     const getComponentLabel = (type: string) => {
         const labels: {[key: string]: string} = {
@@ -230,19 +319,22 @@ export default function BuilderPage() {
                         </Button>
                     </div>
                 </div>
-                <DialogContent className="sm:max-w-300 w-full">
+                <DialogContent className="sm:max-w-360 w-full h-[80vh] flex flex-col">
                     <DialogHeader>
                         <DialogTitle>Select {getComponentLabel(currentComponentType)}</DialogTitle>
                         <DialogDescription>
-                            {components.length} {getComponentLabel(currentComponentType)}s available
+                            {filteredComponents.length} of {components.length} {getComponentLabel(currentComponentType)}s
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="max-h-150 overflow-y-auto pr-2">
+                    <div className="flex-1 overflow-y-auto pr-2 relative">
                         {loading ? (
                             <div className="text-center py-8">Loading components...</div>
                         ) : components.length > 0 ? (
-                            <div className="grid grid-cols-4 gap-4">
-                                {components.map((component, index) => (
+                            <div className="flex">
+                                <BuilderFilters componentType={currentComponentType} onFilterChange={handleFilterChange} />
+                                
+                            <div className="grid grid-cols-4 gap-4 flex-1">
+                                {filteredComponents.map((component, index) => (
                                     <div key={index}>
                                         <Item variant="outline" className="p-0 overflow-hidden">
                                             <ItemHeader className="p-0 m-0">
@@ -273,17 +365,19 @@ export default function BuilderPage() {
                                     </div>
                                 ))}
                             </div>
+                            </div>
                         ) : (
                             <div className="text-center py-8 text-muted-foreground">
                                 No components available
                             </div>
                         )}
+                        
                     </div>
-                                        <DialogFooter>
-                                            <Button variant="outline" onClick={() => setIsOpen(false)}>
-                                                Cancel
-                                            </Button>
-                                        </DialogFooter>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsOpen(false)}>
+                            Cancel
+                        </Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
             <Separator className="my-4" />
