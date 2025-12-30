@@ -331,7 +331,7 @@ export default function BuilderPage() {
                             <div className="text-center py-8">Loading components...</div>
                         ) : components.length > 0 ? (
                             <div className="flex">
-                                <BuilderFilters componentType={currentComponentType} onFilterChange={handleFilterChange} />
+                                <BuilderFilters componentType={currentComponentType} onFilterChange={handleFilterChange} components={components} />
                                 
                             <div className="grid grid-cols-4 gap-4 flex-1">
                                 {filteredComponents.map((component, index) => (
