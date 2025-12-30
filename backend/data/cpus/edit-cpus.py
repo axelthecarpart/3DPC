@@ -8,7 +8,7 @@ class CpuEntryApp:
     MANUFACTURERS = ["AMD", "Intel"]
     SOCKETS = ["AM5", "AM4", "LGA1700", "LGA1200", "LGA1151", "sTRX4", "sWRX8"]
     MICROARCHITECTURES = ["Zen 5", "Zen 4", "Zen 3", "Zen 2", "Zen+", "Zen", "Arrow Lake", "Raptor Lake Refresh", "Raptor Lake", "Alder Lake", "Rocket Lake", "Comet Lake", "Cascade Lake"]
-    GRAPHICS = ["None", "AMD Radeon Graphics", "Intel UHD Graphics 770"]
+    GRAPHICS = ["None", "AMD Radeon Graphics", "Intel UHD Graphics 770", "Intel UHD Graphics 730"]
 
     def __init__(self, root):
         self.root = root
@@ -38,7 +38,7 @@ class CpuEntryApp:
         # Name
         ttk.Label(main_frame, text="Name:").grid(row=1, column=0, sticky=tk.W, pady=8)
         self.name_var = tk.StringVar()
-        name_entry = ttk.Entry(main_frame, textvariable=self.name_var, width=30)
+        name_entry = ttk.Entry(main_frame, textvariable=self.name_var, width=50)
         name_entry.grid(row=1, column=1, columnspan=3, sticky=(tk.W, tk.E), pady=8)
         name_entry.bind("<KeyRelease>", lambda e: self.check_duplicate_cpu())
         
@@ -50,72 +50,72 @@ class CpuEntryApp:
         # Manufacturer
         ttk.Label(main_frame, text="Manufacturer:").grid(row=3, column=0, sticky=tk.W, pady=8)
         self.manufacturer_var = tk.StringVar()
-        ttk.Combobox(main_frame, textvariable=self.manufacturer_var, values=self.MANUFACTURERS, state="readonly", width=15).grid(row=3, column=1, sticky=(tk.W, tk.E), pady=8)
+        ttk.Combobox(main_frame, textvariable=self.manufacturer_var, values=self.MANUFACTURERS, state="readonly", width=30).grid(row=3, column=1, sticky=(tk.W, tk.E), pady=8)
         
         # Socket
         ttk.Label(main_frame, text="Socket:").grid(row=4, column=0, sticky=tk.W, pady=8)
         self.socket_var = tk.StringVar()
-        ttk.Combobox(main_frame, textvariable=self.socket_var, values=self.SOCKETS, state="readonly", width=15).grid(row=4, column=1, sticky=(tk.W, tk.E), pady=8)
+        ttk.Combobox(main_frame, textvariable=self.socket_var, values=self.SOCKETS, state="readonly", width=30).grid(row=4, column=1, sticky=(tk.W, tk.E), pady=8)
         
         # Microarchitecture
         ttk.Label(main_frame, text="Microarchitecture:").grid(row=4, column=2, sticky=tk.W, pady=8)
         self.microarch_var = tk.StringVar()
-        ttk.Combobox(main_frame, textvariable=self.microarch_var, values=self.MICROARCHITECTURES, state="readonly", width=15).grid(row=4, column=3, sticky=(tk.W, tk.E), pady=8)
+        ttk.Combobox(main_frame, textvariable=self.microarch_var, values=self.MICROARCHITECTURES, state="readonly", width=30).grid(row=4, column=3, sticky=(tk.W, tk.E), pady=8)
         
         # Cores
         ttk.Label(main_frame, text="Cores:").grid(row=5, column=0, sticky=tk.W, pady=8)
         self.cores_var = tk.StringVar()
-        ttk.Entry(main_frame, textvariable=self.cores_var, width=15).grid(row=5, column=1, sticky=(tk.W, tk.E), pady=8)
+        ttk.Entry(main_frame, textvariable=self.cores_var, width=30).grid(row=5, column=1, sticky=(tk.W, tk.E), pady=8)
         
         # Threads
         ttk.Label(main_frame, text="Threads:").grid(row=5, column=2, sticky=tk.W, pady=8)
         self.threads_var = tk.StringVar()
-        ttk.Entry(main_frame, textvariable=self.threads_var, width=15).grid(row=5, column=3, sticky=(tk.W, tk.E), pady=8)
+        ttk.Entry(main_frame, textvariable=self.threads_var, width=30).grid(row=5, column=3, sticky=(tk.W, tk.E), pady=8)
         
         # Base Clock
         ttk.Label(main_frame, text="Base Clock (GHz):").grid(row=6, column=0, sticky=tk.W, pady=8)
         self.base_clock_var = tk.StringVar()
-        ttk.Entry(main_frame, textvariable=self.base_clock_var, width=15).grid(row=6, column=1, sticky=(tk.W, tk.E), pady=8)
+        ttk.Entry(main_frame, textvariable=self.base_clock_var, width=30).grid(row=6, column=1, sticky=(tk.W, tk.E), pady=8)
         
         # Boost Clock
         ttk.Label(main_frame, text="Boost Clock (GHz):").grid(row=6, column=2, sticky=tk.W, pady=8)
         self.boost_clock_var = tk.StringVar()
-        ttk.Entry(main_frame, textvariable=self.boost_clock_var, width=15).grid(row=6, column=3, sticky=(tk.W, tk.E), pady=8)
+        ttk.Entry(main_frame, textvariable=self.boost_clock_var, width=30).grid(row=6, column=3, sticky=(tk.W, tk.E), pady=8)
         
         # L1 Cache
         ttk.Label(main_frame, text="L1 Cache (KB):").grid(row=7, column=0, sticky=tk.W, pady=8)
         self.l1_var = tk.StringVar()
-        ttk.Entry(main_frame, textvariable=self.l1_var, width=15).grid(row=7, column=1, sticky=(tk.W, tk.E), pady=8)
+        ttk.Entry(main_frame, textvariable=self.l1_var, width=30).grid(row=7, column=1, sticky=(tk.W, tk.E), pady=8)
         
         # L2 Cache
         ttk.Label(main_frame, text="L2 Cache (MB):").grid(row=7, column=2, sticky=tk.W, pady=8)
         self.l2_var = tk.StringVar()
-        ttk.Entry(main_frame, textvariable=self.l2_var, width=15).grid(row=7, column=3, sticky=(tk.W, tk.E), pady=8)
+        ttk.Entry(main_frame, textvariable=self.l2_var, width=30).grid(row=7, column=3, sticky=(tk.W, tk.E), pady=8)
         
         # L3 Cache
         ttk.Label(main_frame, text="L3 Cache (MB):").grid(row=8, column=0, sticky=tk.W, pady=8)
         self.l3_var = tk.StringVar()
-        ttk.Entry(main_frame, textvariable=self.l3_var, width=15).grid(row=8, column=1, sticky=(tk.W, tk.E), pady=8)
+        ttk.Entry(main_frame, textvariable=self.l3_var, width=30).grid(row=8, column=1, sticky=(tk.W, tk.E), pady=8)
         
         # Base TDP
         ttk.Label(main_frame, text="Base TDP (W):").grid(row=8, column=2, sticky=tk.W, pady=8)
         self.base_tdp_var = tk.StringVar()
-        ttk.Entry(main_frame, textvariable=self.base_tdp_var, width=15).grid(row=8, column=3, sticky=(tk.W, tk.E), pady=8)
+        ttk.Entry(main_frame, textvariable=self.base_tdp_var, width=30).grid(row=8, column=3, sticky=(tk.W, tk.E), pady=8)
 
         # Max TDP
         ttk.Label(main_frame, text="Max TDP (W):").grid(row=9, column=2, sticky=tk.W, pady=8)
         self.max_tdp_var = tk.StringVar()
-        ttk.Entry(main_frame, textvariable=self.max_tdp_var, width=15).grid(row=9, column=3, sticky=(tk.W, tk.E), pady=8)
+        ttk.Entry(main_frame, textvariable=self.max_tdp_var, width=30).grid(row=9, column=3, sticky=(tk.W, tk.E), pady=8)
 
         # Max Memory
         ttk.Label(main_frame, text="Max Memory (GB):").grid(row=9, column=0, sticky=tk.W, pady=8)
         self.max_memory_var = tk.StringVar()
-        ttk.Entry(main_frame, textvariable=self.max_memory_var, width=15).grid(row=9, column=1, sticky=(tk.W, tk.E), pady=8)
+        ttk.Entry(main_frame, textvariable=self.max_memory_var, width=30).grid(row=9, column=1, sticky=(tk.W, tk.E), pady=8)
         
         # Graphics
         ttk.Label(main_frame, text="Graphics:").grid(row=10, column=0, sticky=tk.W, pady=8)
         self.graphics_var = tk.StringVar()
-        ttk.Combobox(main_frame, textvariable=self.graphics_var, values=self.GRAPHICS, state="readonly", width=15).grid(row=10, column=1, sticky=(tk.W, tk.E), pady=8)
+        ttk.Combobox(main_frame, textvariable=self.graphics_var, values=self.GRAPHICS, state="readonly", width=30).grid(row=10, column=1, sticky=(tk.W, tk.E), pady=8)
         
         # Image Path
         ttk.Label(main_frame, text="Image File:").grid(row=10, column=2, sticky=tk.W, pady=8)
@@ -427,10 +427,10 @@ class CpuEntryApp:
                 elif key == "graphics":
                     values = self.GRAPHICS
                 
-                combo = ttk.Combobox(self.details_frame, textvariable=var, values=values, state="readonly", width=40)
+                combo = ttk.Combobox(self.details_frame, textvariable=var, values=values, state="readonly", width=60)
                 combo.grid(row=i, column=1, sticky=(tk.W, tk.E), pady=5, padx=5)
             else:
-                entry = ttk.Entry(self.details_frame, textvariable=var, width=43)
+                entry = ttk.Entry(self.details_frame, textvariable=var, width=63)
                 entry.grid(row=i, column=1, sticky=(tk.W, tk.E), pady=5, padx=5)
             
             # Add trace to detect changes

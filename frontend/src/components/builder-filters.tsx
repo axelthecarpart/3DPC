@@ -37,14 +37,6 @@ export function BuilderFilters({ componentType, onFilterChange, components = [] 
     return [...new Set(values)].sort((a, b) => a - b)
   }
 
-  // Get the closest valid value from the unique values array
-  const getClosestValue = (value: number, validValues: number[]): number => {
-    if (validValues.length === 0) return value
-    return validValues.reduce((prev, curr) => 
-      Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev
-    )
-  }
-
   const handleCheckboxChange = (filterId: string, option: string, checked: boolean) => {
     const currentValues = filterValues[filterId] || []
     const newValues = checked
