@@ -18,18 +18,12 @@
             {
                 "id": "cores",
                 "label": "Cores",
-                "type": "range",
-                "min": 2,
-                "max": 64,
-                "step": 1
+                "type": "range"
             },
             {
                 "id": "threads",
                 "label": "Threads",
-                "type": "range",
-                "min": 4,
-                "max": 128,
-                "step": 2
+                "type": "range"
             },
             {
                 "id": "tdp",
@@ -61,7 +55,7 @@
                 "id": "chipset",
                 "label": "Chipset",
                 "type": "checkbox",
-                "options": ["RTX 50", "RTX 40", "RX 7000", "ARC"]
+                "options": ["RTX 5090", "RTX 4090", "RX 7900", "ARC B580"]
             },
             {
                 "id": "vram",
@@ -235,7 +229,7 @@
                 "id": "type",
                 "label": "Type",
                 "type": "checkbox",
-                "options": ["Air", "AIO 240mm", "AIO 360mm", "AIO 420mm"]
+                "options": ["Air", "AIO 240mm", "AIO 360mm", "AIO 420mm", "Water Block"]
             },
             {
                 "id": "tdp",
@@ -252,6 +246,12 @@
                 "min": 120,
                 "max": 190,
                 "step": 1
+            },
+            {
+                "id": "color",
+                "label": "Color",
+                "type": "checkbox",
+                "options": ["Black", "White"]
             }
         ]
     }

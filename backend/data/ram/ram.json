@@ -1,0 +1,17 @@
+[
+    {
+        "name": "Corsair Vengeance DDR5",
+        "type": "DDR5",
+        "configurations": [
+            {   
+                "color": "Black",
+                "capacity": 16,
+                "sticks": 1,
+                "speed": 5600,
+                "casLatency": 40,
+                "timings": "40-40-40-77",
+                "image": "https://example.com/images/corsair_vengeance_ddr5_black.png"
+            }
+        ]
+    }
+]
