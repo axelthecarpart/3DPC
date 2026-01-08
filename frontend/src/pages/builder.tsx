@@ -1,6 +1,6 @@
 import { ButtonGroup } from "@/components/ui/button-group"
 import { Separator } from "@/components/ui/separator"
-import { Plus, Cpu, X, Gpu, MemoryStick, Fan, PcCase, CircuitBoard, HardDrive, Cable, Zap, Banknote, Rotate3D, ArrowLeftRight } from "lucide-react"
+import { Plus, Cpu, X, Gpu, MemoryStick, Fan, PcCase, CircuitBoard, HardDrive, Cable, Zap, Banknote, Rotate3D, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Item, ItemContent, ItemHeader, ItemMedia, ItemTitle } from "@/components/ui/item"
 import AddCpu from "@/components/add-cpu"
@@ -22,13 +22,26 @@ export default function BuilderPage() {
     <div className="p-4">
       <h1 className="text-2xl font-semibold mb-4">PC Builder</h1>
       <Separator className="mb-4" />
+      <div>
+        <ButtonGroup className="mb-4">
+            <Button variant="outline" size="sm"><Zap />0W</Button>
+            <Button variant="outline" size="sm"><Banknote />$</Button>
+        </ButtonGroup>
+      </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-1">
             <Item variant="outline" className="p-0 overflow-clip min-h-fit">
                 {selectedCpu ? (
                     <>
                         <ItemHeader>
-                            <ItemMedia className="justify-center bg-white w-full p-4">
-                                <img src={`${apiUrl}/data/cpus${selectedCpu.image}`} alt={selectedCpu.name} className="h-24 object-contain"/>
+                            <ItemMedia className="justify-center bg-white w-full p-4 h-32">
+                                <img src={`${apiUrl}/data/cpus${selectedCpu.image}`} alt={selectedCpu.name} className="h-24 object-contain"  onError={(e) => {
+                                                    e.currentTarget.style.display = 'none';
+                                                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                                }}/>
+                                <div className="hidden flex justify-center items-center flex-col gap-2">
+                                    <Cpu className="h-12 w-12 text-muted-foreground" />
+                                    <p className="text-muted-foreground text-md">Image Coming Soon!</p>
+                                </div>
                             </ItemMedia>
                         </ItemHeader>
                         <ItemContent className="p-4">
@@ -41,7 +54,7 @@ export default function BuilderPage() {
                                     <div className="truncate">Socket: {selectedCpu.socket}</div>
                                     <div className="font-semibold text-foreground truncate">${selectedCpu.price}</div>
                                 </div>
-                            <div className="flex gap-2 mt-4"><div className="flex-1"><AddCpu onCpuSelect={setSelectedCpu} selectedCpu={selectedCpu}/></div><Button variant="destructive" size="icon" onClick={() => setSelectedCpu(null)}><X /></Button></div>
+                            <div className="flex gap-2 mt-4"><div className="flex-1"><AddCpu onCpuSelect={setSelectedCpu} selectedCpu={selectedCpu}/></div><Button variant="default" onClick={() => selectedCpu.amazonLink && window.open(selectedCpu.amazonLink, '_blank')}><ShoppingCart />Buy</Button><Button variant="destructive" size="icon" onClick={() => setSelectedCpu(null)}><X /></Button></div>
                         </ItemContent>
                     </>
                 ):(

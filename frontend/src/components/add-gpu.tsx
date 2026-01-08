@@ -1,8 +1,6 @@
 import {
   Item,
-  ItemActions,
   ItemContent,
-  ItemDescription,
   ItemFooter,
   ItemHeader,
   ItemMedia,
@@ -19,10 +17,10 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 
-import { Plus, Cpu, X, Gpu, MemoryStick, Fan, PcCase, CircuitBoard, Cable, Zap, Banknote, Rotate3D, ArrowLeftRight } from "lucide-react"
+import { Plus, Gpu, ArrowLeftRight } from "lucide-react"
 const apiUrl = "http://localhost:5000"
 import { BuilderFilters } from "@/components/builder-filters"
-import { useState, useEffect, useMemo } from "react"
+import { useState, useMemo } from "react"
 
 
 interface AddGpuProps {
@@ -130,9 +128,16 @@ export default function AddGpu({ onGpuSelect, selectedGpu }: AddGpuProps) {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-1">
                                 {filteredGpus.map((gpu: any, index: number) => (
                                 <Item key={index} variant="outline" className="p-0 overflow-clip">
-                                    <ItemHeader className="justify-center bg-white p-4">
+                                    <ItemHeader className="justify-center bg-white p-4 h-32">
                                         <ItemMedia>
-                                            <img src={`${apiUrl}/data/gpus${gpu.image}`} alt={gpu.name} className="h-24 object-contain" />
+                                            <img src={`${apiUrl}/data/gpus${gpu.image}`} alt={gpu.name} className="h-24 object-contain"onError={(e) => {
+                                                    e.currentTarget.style.display = 'none';
+                                                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                                }} />
+                                            <div className="hidden flex justify-center items-center flex-col gap-2">
+                                                <Gpu className="h-12 w-12 text-muted-foreground" />
+                                                <p className="text-muted-foreground text-md">Image Coming Soon!</p>
+                                            </div>
                                         </ItemMedia>
                                     </ItemHeader>
                                     <ItemContent className="p-4">

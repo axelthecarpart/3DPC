@@ -132,9 +132,9 @@ class GpuEntryApp:
             gpus_json_dir = Path(__file__).parent
             image_path = Path(file_path)
             try:
-                relative_path = image_path.relative_to(cpus_json_dir)
+                # relative_path = image_path.relative_to(cpus_json_dir)
                 # Convert to forward slashes for consistency and add leading slash
-                self.selected_filename = "/" + str(relative_path).replace("\\", "/")
+                # self.selected_filename = "/" + str(relative_path).replace("\\", "/")
                 self.image_path_var.set(self.selected_filename)
                 self.update_generated_path()
             except ValueError:

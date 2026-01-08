@@ -20,7 +20,7 @@ class CpuEntryApp:
             "name": "", "socket": "", "microarchitecture": "", "cores": "",
             "threads": "", "baseClock": "", "boostClock": "", "baseTdp": "", "maxTdp": "", "maxMemory": "",
             "l1Cache": "", "l2Cache": "", "l3Cache": "", "manufacturer": "",
-            "graphics": "", "image": ""
+            "graphics": "", "image": "", "amazonLink": ""
         }
         
         self.create_widgets()
@@ -132,9 +132,14 @@ class CpuEntryApp:
         self.generated_path_var.set("Select an image file")
         ttk.Label(main_frame, textvariable=self.generated_path_var, foreground="green", wraplength=300).grid(row=11, column=3, sticky=(tk.W, tk.E), pady=8)
         
+        # Amazon Affiliate Link
+        ttk.Label(main_frame, text="Amazon Link:").grid(row=12, column=0, sticky=tk.W, pady=8)
+        self.amazon_link_var = tk.StringVar()
+        ttk.Entry(main_frame, textvariable=self.amazon_link_var, width=50).grid(row=12, column=1, columnspan=3, sticky=(tk.W, tk.E), pady=8)
+        
         # Buttons
         button_frame = ttk.Frame(main_frame)
-        button_frame.grid(row=11, column=0, columnspan=4, pady=20)
+        button_frame.grid(row=13, column=0, columnspan=4, pady=20)
         
         ttk.Button(button_frame, text="Add CPU", command=self.add_cpu).pack(side=tk.LEFT, padx=5)
         ttk.Button(button_frame, text="Clear", command=self.clear_form).pack(side=tk.LEFT, padx=5)
@@ -143,7 +148,7 @@ class CpuEntryApp:
         # Status
         self.status_var = tk.StringVar()
         self.status_var.set("Ready")
-        ttk.Label(main_frame, textvariable=self.status_var, foreground="gray").grid(row=13, column=0, columnspan=4, pady=10)
+        ttk.Label(main_frame, textvariable=self.status_var, foreground="gray").grid(row=14, column=0, columnspan=4, pady=10)
 
     def browse_image(self):
         file_path = filedialog.askopenfilename(
@@ -210,7 +215,8 @@ class CpuEntryApp:
             "l3Cache": self.l3_var.get(),
             "manufacturer": self.manufacturer_var.get(),
             "graphics": self.graphics_var.get(),
-            "image": self.generated_path_var.get()
+            "image": self.generated_path_var.get(),
+            "amazonLink": self.amazon_link_var.get()
         }
         
         # Load existing CPUs - cpus.json is in the same directory as this script
@@ -263,6 +269,7 @@ class CpuEntryApp:
         self.base_tdp_var.set("")
         self.max_tdp_var.set("")
         self.max_memory_var.set("")
+        self.amazon_link_var.set("")
         self.selected_filename = ""
         self.image_path_var.set("No file selected")
         self.duplicate_status_var.set("")
@@ -292,6 +299,7 @@ class CpuEntryApp:
         self.max_memory_var.set("")
         self.manufacturer_var.set("")
         self.graphics_var.set("")
+        self.amazon_link_var.set("")
         self.selected_filename = ""
         self.image_path_var.set("No file selected")
         self.duplicate_status_var.set("")
@@ -409,6 +417,7 @@ class CpuEntryApp:
             ("L3 Cache (MB)", "l3Cache", False),
             ("Graphics", "graphics", True),
             ("Image Path", "image", False),
+            ("Amazon Link", "amazonLink", False),
         ]
         
         for i, (label, key, is_combo) in enumerate(fields):

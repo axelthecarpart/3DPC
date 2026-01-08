@@ -26,7 +26,7 @@ export function Header() {
             </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Badge variant="secondary">Alpha v0.0.2</Badge>
+          <Badge variant="secondary">Alpha v0.0.3</Badge>
         </NavigationMenuItem>
         <NavigationMenuItem>
             <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
@@ -35,7 +35,7 @@ export function Header() {
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-            <Link to="/">Products</Link>
+            <Link to="/compare">Compare</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
         <ModeToggle />
