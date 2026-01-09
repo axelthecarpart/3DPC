@@ -1,11 +1,11 @@
 import { ButtonGroup } from "@/components/ui/button-group"
 import { Separator } from "@/components/ui/separator"
-import { Plus, Cpu, X, Gpu, MemoryStick, Fan, PcCase, CircuitBoard, HardDrive, Cable, Zap, Banknote, Rotate3D, ShoppingCart } from "lucide-react"
+import { Cpu, X, Gpu, MemoryStick, Fan, PcCase, CircuitBoard, HardDrive, Cable, Zap, Banknote, Rotate3D, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Item, ItemContent, ItemHeader, ItemMedia, ItemTitle } from "@/components/ui/item"
 import AddCpu from "@/components/add-cpu"
 import AddGpu from "@/components/add-gpu"
-import { useState, useEffect, useMemo } from "react"
+import { useState } from "react"
 
 const apiUrl = "http://localhost:5000"
 
@@ -22,11 +22,12 @@ export default function BuilderPage() {
     <div className="p-4">
       <h1 className="text-2xl font-semibold mb-4">PC Builder</h1>
       <Separator className="mb-4" />
-      <div>
+      <div className="justify-between flex mb-4">
         <ButtonGroup className="mb-4">
-            <Button variant="outline" size="sm"><Zap />0W</Button>
-            <Button variant="outline" size="sm"><Banknote />$</Button>
+            <Button variant="outline" size="lg"><Zap />0W</Button>
+            <Button variant="outline" size="lg"><Banknote />$</Button>
         </ButtonGroup>
+        <Button variant="default" size="lg" className="ml-4"><Rotate3D />3D View</Button>
       </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-1">
             <Item variant="outline" className="p-0 overflow-clip min-h-fit">

@@ -1,8 +1,6 @@
 import {
   Item,
-  ItemActions,
   ItemContent,
-  ItemDescription,
   ItemFooter,
   ItemHeader,
   ItemMedia,
@@ -19,10 +17,10 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 
-import { Plus, Cpu, X, Zap, Banknote, Rotate3D, ArrowLeftRight } from "lucide-react"
+import { Plus, Cpu, ArrowLeftRight } from "lucide-react"
 const apiUrl = "http://localhost:5000"
 import { BuilderFilters } from "@/components/builder-filters"
-import { useState, useEffect, useMemo } from "react"
+import { useState, useMemo } from "react"
 
 
 interface AddCpuProps {
