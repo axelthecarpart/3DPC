@@ -6,6 +6,7 @@ import { Header } from './components/header'
 import HomePage from './pages/home'
 import BuilderPage from './pages/builder'
 import ComparePage from './pages/compare'
+import DealsPage from './pages/deals'
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/builder" element={<BuilderPage />} />
         <Route path="/compare" element={<ComparePage />} />
+        <Route path="/deals" element={<DealsPage />} />
       </Routes>
     </ThemeProvider>
 

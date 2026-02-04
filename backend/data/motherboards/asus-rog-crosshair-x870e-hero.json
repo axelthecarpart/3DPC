@@ -1,0 +1,65 @@
+{
+    "id": "asus-rog-crosshair-x870e-hero",
+    "specifications": {
+        "formFactor": "ATX",
+        "chipset": "X870E",
+        "memory": {
+            "max": 256,
+            "channels": 2,
+            "type": "DDR5",
+            "slots": 4,
+            "eccSupport": false
+        },
+        "pcieSlots": [
+            {
+                "gen": 5,
+                "size": "x16",
+                "id": "pcie_1"
+            },
+            {
+                "gen": 5,
+                "size": "x16",
+                "id": "pcie_2"
+            }
+        ],
+        "m2": [
+            {
+                "gen": 5,
+                "size": "2280",
+                "key": "M",
+                "id": "m2_1"
+            },
+            {
+                "gen": 5,
+                "size": "2280",
+                "key": "M",
+                "id": "m2_2"
+            },
+            {
+                "gen": 5,
+                "size": "2280",
+                "key": "M",
+                "id": "m2_3"
+            },
+            {
+                "gen": 4,
+                "size": "2280",
+                "key": "M",
+                "id": "m2_4"
+            },
+            {
+                "gen": 4,
+                "size": "2280",
+                "key": "M",
+                "id": "m2_5"
+            }
+        ],
+        "sata": {
+            "6gbps": 4
+        },
+        "ethernet": {
+            "speedMbps": 2500,
+            "controller": "Intel I225-V"
+        }
+    }
+}

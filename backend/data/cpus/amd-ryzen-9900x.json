@@ -1,0 +1,61 @@
+
+{
+    "id": "amd-ryzen-9900x",
+    "specifications": {
+        "cores": {
+            "total": 12,
+            "performance": 12,
+            "efficient": null,
+            "threads": 24
+        },
+        "clocks": {
+            "performance": {
+                "base": 4.4,
+                "boost": 5.6
+            }
+        },
+        "cache": {
+            "l2": 12,
+            "l3": 64
+        },
+        "integratedGraphics": {
+            "model": "AMD Radeon Graphics"
+        },
+        "memory": {
+            "max": 192,
+            "types": ["DDR5"]
+        },
+        "multithreading": true,
+        "pcieSupport": {
+            "version": [5],
+            "lanes": 28,
+            "usable": 24
+        },
+        "lithography": "4nm"
+    },
+    "metadata": {
+        "name": "AMD Ryzen 9 9900X",
+        "manufacturer": "AMD",
+        "ecc": {
+            "support": true,
+            "needMotherboard": true
+        },
+        "tdp": {
+            "base": 120,
+            "max": 162
+        },
+        "microarchitecture": "Zen 5",
+        "socket": "AM5"
+    },
+    "links": {
+        "productPage": "https://www.amd.com/en/products/processors/desktops/ryzen/9000-series/amd-ryzen-9-9900x.html",
+        "sellers": [
+            {
+                "name": "Amazon",
+                "url": "https://www.amazon.com/AMD-RyzenTM-9900X-24-Thread-Processor/dp/B0D6NN87T8?crid=13MDYFPX1OTPH&dib=eyJ2IjoiMSJ9.L5h0LyQeDICyEY1jIEbfwwehvl4sRMJMFirCkfwgVsZk5qNJXZ2DRvnJCWA9xfAWzAPEX1d_lEB6xD7oQTrz4Elc5POLjn9jElbY8qmN5Hc59oYFjOreR5z8_ABD-25DFK5qwooGTrR2VB_DKcGtSzF5aA02cZ0a5OeRp9SJwTIESUW2-muxijPndw4Q00zwwPOqFviJW14y08bl7uy9AvaXkDsrBD1k79oSm6WWVw4.2Ip5WPV_6XRr6_fgsayvv7FvxNZpF12A3znBJJyRc1g&dib_tag=se&keywords=amd%2B9900x&qid=1768187559&sbo=RZvfv%2F%2FHxDF%2BO5021pAnSA%3D%3D&sprefix=amd%2B9900%2Caps%2C197&sr=8-1&th=1&linkCode=ll1&tag=3dpc043-20&linkId=32aafa35575d8ab29436e758f7be3338&language=en_US&ref_=as_li_ss_tl"
+         }
+        ],
+        "images": {
+        }
+    }
+}

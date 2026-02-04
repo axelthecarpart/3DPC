@@ -1,0 +1,60 @@
+{
+    "id": "amd-ryzen-9900x3d",
+    "specifications": {
+        "cores": {
+            "total": 12,
+            "performance": 12,
+            "efficient": null,
+            "threads": 24
+        },
+        "clocks": {
+            "performance": {
+                "base": 4.4,
+                "boost": 5.5
+            }
+        },
+        "cache": {
+            "l2": 12,
+            "l3": 128
+        },
+        "integratedGraphics": {
+            "model": "AMD Radeon Graphics"
+        },
+        "memory": {
+            "max": 192,
+            "types": ["DDR5"]
+        },
+        "multithreading": true,
+        "pcieSupport": {
+            "version": [5],
+            "lanes": 28,
+            "usable": 24
+        },
+        "lithography": "4nm"
+    },
+    "metadata": {
+        "name": "AMD Ryzen 9 9900X3D",
+        "manufacturer": "AMD",
+        "ecc": {
+            "support": true,
+            "needMotherboard": true
+        },
+        "tdp": {
+            "base": 170,
+            "max": 230
+        },
+        "microarchitecture": "Zen 5",
+        "socket": "AM5"
+    },
+    "links": {
+        "productPage": "https://www.amd.com/en/products/processors/desktops/ryzen/9000-series/amd-ryzen-9-9900x3d.html",
+        "sellers": [
+            {
+                "name": "Amazon",
+                "url": "https://www.amazon.com/AMD-Ryzen-9900X3D-12-Core-Processor/dp/B0DWGWN8GY?crid=2PP5Q0YK6F3NZ&dib=eyJ2IjoiMSJ9.N87XoTf8qVLMkvmtLd8URdD0lnG3XbJ_HPjg_YFp3bqu5kEfU_hm9qhuZXHD7V-kZT5ndxuuQP0xADjuo8E0UvhcawhVf0xVFMJ4FojRHO9V4nD-OORghkqirGY2Fjy_S8mguhzRqlWvFFF90lGfR0M4nylgo6cbQcFIa8LgKYlt9rnXY8obEhLbaUqqwEaemR3ArmpPwcPJGASYUjjaVoogKBkNTvrAkJV7JKZlR-4.NsL44bZloYhVNO2AyDjJ3h9x1rT4-o1jnvLXa1kovBo&dib_tag=se&keywords=9900x3d&qid=1768096293&sprefix=9900x3%2Caps%2C287&sr=8-1&linkCode=ll1&tag=3dpc043-20&linkId=655e435f6159d5037f96d3bbefd2aa18&language=en_US&ref_=as_li_ss_tl"
+         }
+        ],
+        "images": {
+        }
+    }
+}

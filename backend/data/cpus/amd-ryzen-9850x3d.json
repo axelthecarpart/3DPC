@@ -1,0 +1,60 @@
+{
+    "id": "amd-ryzen-9850x3d",
+    "specifications": {
+        "cores": {
+            "total": 8,
+            "performance": 8,
+            "efficient": null,
+            "threads": 16
+        },
+        "clocks": {
+            "performance": {
+                "base": 4.7,
+                "boost": 5.6
+            }
+        },
+        "cache": {
+            "l2": 8,
+            "l3": 96
+        },
+        "integratedGraphics": {
+            "model": "AMD Radeon Graphics"
+        },
+        "memory": {
+            "max": 192,
+            "types": ["DDR5"]
+        },
+        "multithreading": true,
+        "pcieSupport": {
+            "version": [5],
+            "lanes": 28,
+            "usable": 24
+        },
+        "lithography": "4nm"
+    },
+    "metadata": {
+        "name": "AMD Ryzen 7 9850X3D",
+        "manufacturer": "AMD",
+        "ecc": {
+            "support": true,
+            "needMotherboard": true
+        },
+        "tdp": {
+            "base": 120,
+            "max": 162
+        },
+        "microarchitecture": "Zen 5",
+        "socket": "AM5"
+    },
+    "links": {
+        "productPage": "https://www.amd.com/en/products/processors/desktops/ryzen/9000-series/amd-ryzen-7-9850x3d.html",
+        "sellers": [
+            {
+                "name": "Amazon",
+                "url": "https://www.amazon.com/AMD-RyzenTM-9850X3D-Desktop-Processor/dp/B0G8JMLXNQ?crid=L8NZUA7DI1VF&dib=eyJ2IjoiMSJ9.GcfQFU7By1IyThOCC8JrZ8l6m2fcCQeZ2xZrlb11C7AHzXYwK5j7GYAfAbXmAAhs9Ks8Ko-0Mh7VEOv5jIOajg8yxJuHnm01r5whUOtXYiDabudnLsLJCpz8K6VXh35uZAwFfBhk8hpOEmkYSwxl4UpGbx3pgKlPe1MzwACM8oOG0D-Qjd05m9ejDPv7idwD4buuYzPB8IK919_OMsUiWi_VuZoyIJ5qkU5mGVHcNd4.ajAhbkfk8c8BLwsyyM1P7b4c2rIQQLIz1EOpMteHLVM&dib_tag=se&keywords=amd+ryzen+7+9850x3d&qid=1770182582&sprefix=amd+ryzen+7+9850x3%2Caps%2C215&sr=8-1&linkCode=ll2&tag=3dpc043-20&linkId=d8fcd9bf24aadd124466260d22ab2508&language=en_US&ref_=as_li_ss_tl"
+         }
+        ],
+        "images": {
+        }
+    }
+}

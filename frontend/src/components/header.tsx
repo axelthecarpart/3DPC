@@ -38,6 +38,11 @@ export function Header() {
             <Link to="/compare">Compare</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+            <Link to="/deals">Deals</Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
         <ModeToggle />
       </NavigationMenuList>
     </NavigationMenu>

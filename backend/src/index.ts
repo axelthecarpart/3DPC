@@ -17,8 +17,8 @@ app.get("/", (_req, res) => {
 });
 
 app.use("/users", userRoutes);
-app.use("/", partsRoutes);
+app.use("/api/parts", partsRoutes);
 app.use("/builds", buildsRoutes);
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`));

@@ -1,0 +1,62 @@
+{
+    "id": "intel-core-ultra-285k",
+    "specifications": {
+        "cores": {
+            "total": 24,
+            "performance": 8,
+            "efficient": 16,
+            "threads": 24
+        },
+        "clocks": {
+            "performance": {
+                "base": 3.7,
+                "boost": 5.7
+            },
+            "efficient": {
+                "base": 3.2,
+                "boost": 4.6
+            }
+        },
+        "cache": {
+            "l2": 40,
+            "l3": 36
+        },
+        "integratedGraphics": {
+            "model": "Intel Xe Graphics"
+        },
+        "memory": {
+            "max": 256,
+            "types": ["DDR5"]
+        },
+        "multithreading": true,
+        "pcieSupport": {
+            "version": [5, 4],
+            "lanes": 24,
+            "usable": 24
+        },
+        "lithography": "3nm"
+    },
+    "metadata": {
+        "name": "Intel Core Ultra 9 285K",
+        "manufacturer": "Intel",
+        "ecc": {
+            "support": true,
+            "needMotherboard": true
+        },
+        "tdp": {
+            "base": 125,
+            "max": 250
+        },
+        "microarchitecture": "Arrow Lake",
+        "socket": "LGA 1851"
+    },
+    "links": {
+        "productPage": "https://www.intel.com/content/www/us/en/products/sku/241060/intel-core-ultra-9-processor-285k-36m-cache-up-to-5-70-ghz/specifications.html",
+        "sellers": [
+            {
+                "name": "Amazon",
+                "url": "https://www.amazon.com/Intel-Core-Ultra-Processor-285K/dp/B0DFKC99VL?crid=1DLX7XC9JP6BI&dib=eyJ2IjoiMSJ9.hQVchh3ek32RUBjDXCLO7cKSU0AXrwEQn6IJA0ikhLNVar8xNhOcAdxTr6DrMQY0-FwjRQVddBTLw9ihWKIhcB1ySeUgDYWyUaLeyZ9ujsxQN_8HaPCLvCWHoI-MOtk2ZtNIFEUSW2qsrcTH_mq1a5zs9EDeTEUcIs8r8gKfdonuhnfr0S0ay2dH8L3_4tBJDUwf4B1if1W_20WpwKjVZNNMND_M4Awu88FWIi98CG0.DADswixF1W_8IbjaELCG2tXtJHgg3OrtX3-PQEduK60&dib_tag=se&keywords=intel%2Bcore%2Bultra%2B9%2B285k&qid=1768365317&sprefix=intel%2Bcore%2Bultra%2B9%2B28%2Caps%2C295&sr=8-1&th=1&linkCode=ll1&tag=3dpc043-20&linkId=5b74260096a94b199f94becb88f6f753&language=en_US&ref_=as_li_ss_tl"
+         }
+        ]
+    }
+}

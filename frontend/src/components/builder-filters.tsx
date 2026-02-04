@@ -1,150 +1,515 @@
-import { useState, useEffect } from "react"
+import { useState, useMemo } from "react"
+import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Slider } from "@/components/ui/slider"
-import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import filterConfig from "../components/builder-filters.json"
+
 interface BuilderFiltersProps {
   componentType: string
-  onFilterChange?: (filters: any) => void
-  components?: any[]
+  onFilterChange: (filters: Record<string, any>) => void
+  components: any[]
 }
 
-export function BuilderFilters({ componentType, onFilterChange, components = [] }: BuilderFiltersProps) {
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({})
+export function BuilderFilters({ componentType, onFilterChange, components }: BuilderFiltersProps) {
+  const [filters, setFilters] = useState<Record<string, any>>({})
 
-  const config = filterConfig.find((c) => c.type === componentType)
+  // Get unique sorted values from actual CPU data
+  const uniqueSortedValues = useMemo<{
+    cores: number[]
+    threads: number[]
+    tdps: number[]
+    l2Cache: number[]
+    l3Cache: number[]
+    capacity: number[]
+  }>(() => {
+    if (componentType === 'cpu' && components.length > 0) {
+      const cores = [...new Set(components.map(cpu => cpu.specifications?.cores?.total || 0).filter(Boolean))].sort((a, b) => a - b)
+      const threads = [...new Set(components.map(cpu => cpu.specifications?.cores?.threads || 0).filter(Boolean))].sort((a, b) => a - b)
+      const tdps = [...new Set(components.map(cpu => cpu.metadata?.tdp?.base || 0).filter(Boolean))].sort((a, b) => a - b)
+      const l2Cache = [...new Set(components.map(cpu => cpu.specifications?.cache?.l2 || 0).filter(Boolean))].sort((a, b) => a - b)
+      const l3Cache = [...new Set(components.map(cpu => cpu.specifications?.cache?.l3 || 0).filter(Boolean))].sort((a, b) => a - b)
+      
+      return { cores, threads, tdps, l2Cache, l3Cache, capacity: [] }
+    }
+    if (componentType === 'storage' && components.length > 0) {
+      const capacity = [...new Set(components.map(storage => storage.specifications?.capacity?.gb || 0).filter(Boolean))].sort((a, b) => a - b)
+      return { cores: [], threads: [], tdps: [], l2Cache: [], l3Cache: [], capacity }
+    }
+    return { cores: [], threads: [], tdps: [], l2Cache: [], l3Cache: [], capacity: [] }
+  }, [components, componentType])
 
-  // Reset filters when component type changes
-  useEffect(() => {
-    setFilterValues({})
-    onFilterChange?.({})
-  }, [componentType])
+  // Calculate dynamic ranges from actual CPU data
+  const ranges = useMemo(() => {
+    if (componentType === 'cpu' && uniqueSortedValues.cores.length > 0) {
+      return {
+        cores: { 
+          min: uniqueSortedValues.cores[0], 
+          max: uniqueSortedValues.cores[uniqueSortedValues.cores.length - 1],
+          values: uniqueSortedValues.cores
+        },
+        threads: { 
+          min: uniqueSortedValues.threads[0], 
+          max: uniqueSortedValues.threads[uniqueSortedValues.threads.length - 1],
+          values: uniqueSortedValues.threads
+        },
+        tdp: { 
+          min: uniqueSortedValues.tdps[0], 
+          max: uniqueSortedValues.tdps[uniqueSortedValues.tdps.length - 1],
+          values: uniqueSortedValues.tdps
+        },
+        l2Cache: { 
+          min: uniqueSortedValues.l2Cache[0], 
+          max: uniqueSortedValues.l2Cache[uniqueSortedValues.l2Cache.length - 1],
+          values: uniqueSortedValues.l2Cache
+        },
+        l3Cache: { 
+          min: uniqueSortedValues.l3Cache[0], 
+          max: uniqueSortedValues.l3Cache[uniqueSortedValues.l3Cache.length - 1],
+          values: uniqueSortedValues.l3Cache
+        }
+        
+      }
+    }
+    return { 
+      cores: { min: 0, max: 256, values: [] }, 
+      threads: { min: 0, max: 512, values: [] }, 
+      tdp: { min: 0, max: 1000, values: [] },
+      l2Cache: { min: 0, max: 256, values: [] },
+      l3Cache: { min: 0, max: 256, values: [] }
+    }
+  }, [uniqueSortedValues, componentType])
 
-  if (!config) {
-    return null
+  // Extract unique values from components
+  const uniqueValues = useMemo(() => {
+    if (componentType === 'cpu' && components.length > 0) {
+      const manufacturers = [...new Set(components.map(cpu => cpu.metadata?.name?.split(' ')[0]).filter(Boolean))]
+      const sockets = [...new Set(components.map(cpu => cpu.metadata?.socket).filter(Boolean))]
+      const hasGpu = [...new Set(components.map(cpu => 
+        cpu.specifications?.integratedGraphics?.model ? 'Yes' : 'No'
+      ))]
+      
+      return { manufacturers, sockets, hasGpu }
+    }
+    if (componentType === 'storage' && components.length > 0) {
+      const manufacturers = [...new Set(components.map(storage => storage.manufacturer || storage.name?.split(' ')[0]).filter(Boolean))]
+      return { manufacturers, sockets: [], hasGpu: [] }
+    }
+    return { manufacturers: [], sockets: [], hasGpu: [] }
+  }, [components, componentType])
+
+  const updateFilter = (key: string, value: any) => {
+    const newFilters = { ...filters, [key]: value }
+    setFilters(newFilters)
+    onFilterChange(newFilters)
   }
 
-  // Get unique sorted values for a numeric field
-  const getUniqueValues = (fieldName: string): number[] => {
-    const values = components
-      .map(comp => {
-        const val = comp[fieldName]
-        return typeof val === 'number' ? val : parseInt(val || '0')
-      })
-      .filter(val => !isNaN(val) && val > 0)
-    
-    return [...new Set(values)].sort((a, b) => a - b)
+  // Helper function to snap slider values to nearest actual value
+  const snapToNearestValue = (value: number, values: number[]) => {
+    if (values.length === 0) return value
+    return values.reduce((prev, curr) => 
+      Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev
+    )
   }
 
-  const handleCheckboxChange = (filterId: string, option: string, checked: boolean) => {
-    const currentValues = filterValues[filterId] || []
-    const newValues = checked
-      ? [...currentValues, option]
-      : currentValues.filter((v: string) => v !== option)
-
-    const updated = { ...filterValues, [filterId]: newValues }
-    setFilterValues(updated)
-    onFilterChange?.(updated)
+  // Helper to calculate thumb position percentage
+  const getThumbPosition = (value: number, min: number, max: number) => {
+    if (!Number.isFinite(value) || !Number.isFinite(min) || !Number.isFinite(max)) return 0
+    if (max <= min) return 0
+    return ((value - min) / (max - min)) * 100
   }
 
-  const handleRangeChange = (filterId: string, values: number[]) => {
-    console.log('Range change:', filterId, values)
-    const updated = { ...filterValues, [filterId]: values }
-    setFilterValues(updated)
-    onFilterChange?.(updated)
+  // Stabilize label rendering (prevents vertical jump at scroll edges)
+  const labelCommon: React.CSSProperties = {
+    top: '50%',
+    transform: 'translate(-50%, -50%) translateZ(0)',
+    transition: 'none',
+    willChange: 'transform',
+    WebkitTransform: 'translate(-50%, -50%) translateZ(0)',
+    WebkitBackfaceVisibility: 'hidden'
   }
-
-  return (
-    <div className="w-64 pr-4">
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Filters</h3>
-        <Separator className="my-2" />
-        <div className="space-y-4 px-2">
-            {config.filters.map((filter) => (
-              <div key={filter.id} className="space-y-2">
-                <Label className="text-sm font-medium">{filter.label}</Label>
-                {filter.type === "checkbox" && (
-                  <div className="space-y-2">
-                    {filter.options?.map((option) => (
-                      <div key={option} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`${filter.id}-${option}`}
-                          checked={(filterValues[filter.id] || []).includes(option)}
-                          onCheckedChange={(checked) =>
-                            handleCheckboxChange(filter.id, option, checked as boolean)
-                          }
-                        />
-                        <label
-                          htmlFor={`${filter.id}-${option}`}
-                          className="text-sm font-normal cursor-pointer"
-                        >
-                          {option}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {filter.type === "range" && (
-                  <div className="space-y-2">
-                    {(() => {
-                      // Get unique values for this field
-                      const uniqueValues = getUniqueValues(filter.id)
-                      
-                      if (uniqueValues.length === 0) {
-                        // Fallback to default behavior if no data
-                        const minVal = filter.min || 0
-                        const maxVal = filter.max || 100
-                        return (
-                          <>
-                            <Slider
-                              min={minVal}
-                              max={maxVal}
-                              step={filter.step}
-                              value={filterValues[filter.id] || [minVal, maxVal]}
-                              onValueChange={(values) => handleRangeChange(filter.id, values)}
-                              className="w-full"
-                            />
-                            <div className="flex justify-between text-xs text-muted-foreground">
-                              <span>{filterValues[filter.id]?.[0] ?? minVal}</span>
-                              <span>{filterValues[filter.id]?.[1] ?? maxVal}</span>
-                            </div>
-                          </>
-                        )
-                      }
-                      
-                      // Use indices for linear movement
-                      const currentValues = filterValues[filter.id]
-                      const minIndex = currentValues ? uniqueValues.indexOf(currentValues[0]) : 0
-                      const maxIndex = currentValues ? uniqueValues.indexOf(currentValues[1]) : uniqueValues.length - 1
-                      
-                      return (
-                        <>
-                          <Slider
-                            min={0}
-                            max={uniqueValues.length - 1}
-                            step={1}
-                            value={[minIndex, maxIndex]}
-                            onValueChange={(indices) => {
-                              // Map indices back to actual values
-                              const actualValues = [uniqueValues[indices[0]], uniqueValues[indices[1]]]
-                              handleRangeChange(filter.id, actualValues)
-                            }}
-                            className="w-full"
-                          />
-                          <div className="flex justify-between text-xs text-muted-foreground">
-                            <span>{uniqueValues[minIndex]}</span>
-                            <span>{uniqueValues[maxIndex]}</span>
-                          </div>
-                        </>
-                      )
-                    })()}
-                  </div>
-                )}
+  
+  if (componentType === 'cpu') {
+    return (
+      <div className="w-64 h-fit rounded-lg border bg-card text-card-foreground shadow-sm">
+        <div className="flex flex-col space-y-1.5 p-6">
+          <h3 className="text-2xl font-semibold leading-none tracking-tight">Filters</h3>
+        </div>
+        <div className="p-6 pt-0 space-y-4">
+          {/* Manufacturer Filter */}
+          {uniqueValues.manufacturers.length > 0 && (
+            <>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Manufacturer</Label>
+                <div className="space-y-2">
+                  {uniqueValues.manufacturers.map((brand) => (
+                    <div key={brand} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`manufacturer-${brand}`}
+                        checked={filters.manufacturer?.includes(brand)}
+                        onCheckedChange={(checked) => {
+                          const current = filters.manufacturer || []
+                          const updated = checked
+                            ? [...current, brand]
+                            : current.filter((b: string) => b !== brand)
+                          updateFilter('manufacturer', updated)
+                        }}
+                      />
+                      <label htmlFor={`manufacturer-${brand}`} className="text-sm cursor-pointer">
+                        {brand}
+                      </label>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
+              <Separator />
+            </>
+          )}
+
+          {/* Socket Filter */}
+          {uniqueValues.sockets.length > 0 && (
+            <>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Socket</Label>
+                <div className="space-y-2">
+                  {uniqueValues.sockets.map((socket) => (
+                    <div key={socket} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`socket-${socket}`}
+                        checked={filters.socket?.includes(socket)}
+                        onCheckedChange={(checked) => {
+                          const current = filters.socket || []
+                          const updated = checked
+                            ? [...current, socket]
+                            : current.filter((s: string) => s !== socket)
+                          updateFilter('socket', updated)
+                        }}
+                      />
+                      <label htmlFor={`socket-${socket}`} className="text-sm cursor-pointer">
+                        {socket}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
+
+          {/* Cores Range */}
+          {ranges.cores.values.length > 0 && (
+            <>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Cores</Label>
+                <div className="relative">
+                  <Slider
+                    min={ranges.cores.min}
+                    max={ranges.cores.max}
+                    step={1}
+                    value={filters.cores || [ranges.cores.min, ranges.cores.max]}
+                    onValueChange={(value) => {
+                      const snapped = [
+                        snapToNearestValue(value[0], ranges.cores.values),
+                        snapToNearestValue(value[1], ranges.cores.values)
+                      ]
+                      updateFilter('cores', snapped)
+                    }}
+                    className="mt-2"
+                  />
+                  <div className="relative h-6 mt-1">
+                    <span
+                      className="absolute text-xs text-muted-foreground pointer-events-none"
+                      style={{
+                        left: `${getThumbPosition(filters.cores?.[0] || ranges.cores.min, ranges.cores.min, ranges.cores.max)}%`,
+                        ...labelCommon
+                      }}
+                    >
+                      {filters.cores?.[0] || ranges.cores.min}
+                    </span>
+                    <span
+                      className="absolute text-xs text-muted-foreground pointer-events-none"
+                      style={{
+                        left: `${getThumbPosition(filters.cores?.[1] || ranges.cores.max, ranges.cores.min, ranges.cores.max)}%`,
+                        top: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        transition: 'none'
+                      }}
+                    >
+                      {filters.cores?.[1] || ranges.cores.max}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
+
+          {/* Threads Range */}
+          {ranges.threads.values.length > 0 && (
+            <>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Threads</Label>
+                <div className="relative">
+                  <Slider
+                    min={ranges.threads.min}
+                    max={ranges.threads.max}
+                    step={1}
+                    value={filters.threads || [ranges.threads.min, ranges.threads.max]}
+                    onValueChange={(value) => {
+                      const snapped = [
+                        snapToNearestValue(value[0], ranges.threads.values),
+                        snapToNearestValue(value[1], ranges.threads.values)
+                      ]
+                      updateFilter('threads', snapped)
+                    }}
+                    className="mt-2"
+                  />
+                  <div className="relative h-6 mt-1">
+                    <span
+                      className="absolute text-xs text-muted-foreground pointer-events-none"
+                      style={{
+                        left: `${getThumbPosition(filters.threads?.[0] || ranges.threads.min, ranges.threads.min, ranges.threads.max)}%`,
+                        top: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        transition: 'none'
+                      }}
+                    >
+                      {filters.threads?.[0] || ranges.threads.min}
+                    </span>
+                    <span
+                      className="absolute text-xs text-muted-foreground pointer-events-none"
+                      style={{
+                        left: `${getThumbPosition(filters.threads?.[1] || ranges.threads.max, ranges.threads.min, ranges.threads.max)}%`,
+                        top: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        transition: 'none'
+                      }}
+                    >
+                      {filters.threads?.[1] || ranges.threads.max}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
+
+          {/* TDP Range */}
+          {ranges.tdp.values.length > 0 && (
+            <>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">TDP</Label>
+                <div className="relative">
+                  <Slider
+                    min={ranges.tdp.min}
+                    max={ranges.tdp.max}
+                    step={1}
+                    value={filters.tdp || [ranges.tdp.min, ranges.tdp.max]}
+                    onValueChange={(value) => {
+                      const snapped = [
+                        snapToNearestValue(value[0], ranges.tdp.values),
+                        snapToNearestValue(value[1], ranges.tdp.values)
+                      ]
+                      updateFilter('tdp', snapped)
+                    }}
+                    className="mt-2"
+                  />
+                  <div className="relative h-6 mt-1">
+                    <span
+                      className="absolute text-xs text-muted-foreground pointer-events-none"
+                      style={{
+                        left: `${getThumbPosition(filters.tdp?.[0] || ranges.tdp.min, ranges.tdp.min, ranges.tdp.max)}%`,
+                        top: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        transition: 'none'
+                      }}
+                    >
+                      {filters.tdp?.[0] || ranges.tdp.min}W
+                    </span>
+                    <span
+                      className="absolute text-xs text-muted-foreground pointer-events-none"
+                      style={{
+                        left: `${getThumbPosition(filters.tdp?.[1] || ranges.tdp.max, ranges.tdp.min, ranges.tdp.max)}%`,
+                        top: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        transition: 'none'
+                      }}
+                    >
+                      {filters.tdp?.[1] || ranges.tdp.max}W
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
+
+          {/* Integrated Graphics Filter */}
+          {uniqueValues.hasGpu.length > 0 && (
+            <div>
+              <Label className="text-sm font-medium mb-2 block">Integrated Graphics</Label>
+              <div className="space-y-2">
+                {uniqueValues.hasGpu.map((option) => (
+                  <div key={option} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`gpu-${option}`}
+                      checked={filters.hasGpu?.includes(option)}
+                      onCheckedChange={(checked) => {
+                        const current = filters.hasGpu || []
+                        const updated = checked
+                          ? [...current, option]
+                          : current.filter((o: string) => o !== option)
+                        updateFilter('hasGpu', updated)
+                      }}
+                    />
+                    <label htmlFor={`gpu-${option}`} className="text-sm cursor-pointer">
+                      {option}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          <>
+            <Separator />
+            <div>
+              {ranges.l3Cache.values.length > 0 && (
+                <>
+                  <Label className="text-sm font-medium mb-2 block">L3 Cache (MB)</Label>
+                  <div className="relative">
+                    <Slider
+                      min={ranges.l3Cache.min}
+                      max={ranges.l3Cache.max}
+                      step={1}
+                      value={filters.l3Cache || [ranges.l3Cache.min, ranges.l3Cache.max]}
+                      onValueChange={(value) => {
+                        const snapped = [
+                          snapToNearestValue(value[0], ranges.l3Cache.values),
+                          snapToNearestValue(value[1], ranges.l3Cache.values)
+                        ]
+                        updateFilter('l3Cache', snapped)
+                      }}
+                      className="mt-2"
+                    />
+                    <div className="relative h-6 mt-1">
+                      <span
+                        className="absolute text-xs text-muted-foreground pointer-events-none"
+                        style={{
+                          left: `${getThumbPosition(filters.l3Cache?.[0] || ranges.l3Cache.min, ranges.l3Cache.min, ranges.l3Cache.max)}%`,
+                          top: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          transition: 'none'
+                        }}
+                      >
+                        {filters.l3Cache?.[0] || ranges.l3Cache.min}MB
+                      </span>
+                      <span
+                        className="absolute text-xs text-muted-foreground pointer-events-none"
+                        style={{
+                          left: `${getThumbPosition(filters.l3Cache?.[1] || ranges.l3Cache.max, ranges.l3Cache.min, ranges.l3Cache.max)}%`,
+                          top: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          transition: 'none'
+                        }}
+                      >
+                        {filters.l3Cache?.[1] || ranges.l3Cache.max}MB
+                      </span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+            <Separator />
+            <div>
+              {ranges.l2Cache.values.length > 0 && (
+                <>
+                  <Label className="text-sm font-medium mb-2 block">L2 Cache (MB)</Label>
+                  <div className="relative">
+                    <Slider
+                      min={ranges.l2Cache.min}
+                      max={ranges.l2Cache.max}
+                      step={1}
+                      value={filters.l2Cache || [ranges.l2Cache.min, ranges.l2Cache.max]}
+                      onValueChange={(value: number[]) => {
+                        const snapped = [
+                          snapToNearestValue(value[0], ranges.l2Cache.values),
+                          snapToNearestValue(value[1], ranges.l2Cache.values)
+                        ]
+                        updateFilter('l2Cache', snapped)
+                      }}
+                      className="mt-2"
+                    />
+                    <div className="relative h-6 mt-1">
+                      <span
+                        className="absolute text-xs text-muted-foreground pointer-events-none"
+                        style={{
+                          left: `${getThumbPosition(filters.l2Cache?.[0] || ranges.l2Cache.min, ranges.l2Cache.min, ranges.l2Cache.max)}%`,
+                          top: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          transition: 'none'
+                        }}
+                      >
+                        {filters.l2Cache?.[0] || ranges.l2Cache.min}MB
+                      </span>
+                      <span
+                        className="absolute text-xs text-muted-foreground pointer-events-none"
+                        style={{
+                          left: `${getThumbPosition(filters.l2Cache?.[1] || ranges.l2Cache.max, ranges.l2Cache.min, ranges.l2Cache.max)}%`,
+                          top: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          transition: 'none'
+                        }}
+                      >
+                        {filters.l2Cache?.[1] || ranges.l2Cache.max}MB
+                      </span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </>
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
+  if (componentType === 'storage') {
+    // Storage filters can be added here in the future
+    return (
+      <div className="w-64 h-fit rounded-lg border bg-card text-card-foreground shadow-sm">
+        <div className="flex flex-col space-y-1.5 p-6">
+          <h3 className="text-2xl font-semibold leading-none tracking-tight">Filters</h3>
+        </div>
+        <div className="p-6 pt-0 space-y-4">
+          {uniqueValues.manufacturers.length > 0 && (
+            <>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Manufacturer</Label>
+                <div className="space-y-2">
+                  {uniqueValues.manufacturers.map((brand) => (
+                    <div key={brand} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`manufacturer-${brand}`}
+                        checked={filters.manufacturer?.includes(brand)}
+                        onCheckedChange={(checked) => {
+                          const current = filters.manufacturer || []
+                          const updated = checked
+                            ? [...current, brand]
+                            : current.filter((b: string) => b !== brand)
+                          updateFilter('manufacturer', updated)
+                        }}
+                      />
+                      <label htmlFor={`manufacturer-${brand}`} className="text-sm cursor-pointer">
+                        {brand}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                </div>
+            </>)
+            }
+        </div>
+      </div>
+    )
+  }
+
+  return null
 }

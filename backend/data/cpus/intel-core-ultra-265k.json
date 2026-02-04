@@ -1,0 +1,62 @@
+{
+    "id": "intel-core-ultra-265k",
+    "specifications": {
+        "cores": {
+            "total": 20,
+            "performance": 8,
+            "efficient": 12,
+            "threads": 20
+        },
+        "clocks": {
+            "performance": {
+                "base": 3.9,
+                "boost": 5.5
+            },
+            "efficient": {
+                "base": 3.3,
+                "boost": 4.6
+            }
+        },
+        "cache": {
+            "l2": 36,
+            "l3": 30
+        },
+        "integratedGraphics": {
+            "model": "Intel Xe Graphics"
+        },
+        "memory": {
+            "max": 256,
+            "types": ["DDR5"]
+        },
+        "multithreading": true,
+        "pcieSupport": {
+            "version": [5, 4],
+            "lanes": 24,
+            "usable": 24
+        },
+        "lithography": "3nm"
+    },
+    "metadata": {
+        "name": "Intel Core Ultra 7 265K",
+        "manufacturer": "Intel",
+        "ecc": {
+            "support": true,
+            "needMotherboard": true
+        },
+        "tdp": {
+            "base": 125,
+            "max": 250
+        },
+        "microarchitecture": "Arrow Lake",
+        "socket": "LGA 1851"
+    },
+    "links": {
+        "productPage": "https://www.intel.com/content/www/us/en/products/sku/241063/intel-core-ultra-7-processor-265k-30m-cache-up-to-5-50-ghz/specifications.html",
+        "sellers": [
+            {
+                "name": "Amazon",
+                "url": "https://www.amazon.com/Intel-Core-Ultra-Processor-265K/dp/B0DFK2MH2D?crid=1IFY19OIDY13S&dib=eyJ2IjoiMSJ9.PleyyzprHbX5K8I3YbD4-t6RzV8vCb7eWFuh0jjh3fUDKoMbNe5QrxLnIwX322tapdguaCO00gaC6SOgMY58q-ECGObcy5VTbImE8YmfDKSX497SIBeAz-PolJIoMkLAZFZhsAuz2mjx1MJTe8TglHNTzp0isO4juO8y3ZWXdYUPG0yuIzD8OiTcsnIsXooBXnBVV0ZlqAdDo0-SSt4mJIAsXsMHBpI6olOTiYcB3mQ.QsHsabTXkBYlQsi_7zcq7O_6YuR65stLeZdMOnSzNZA&dib_tag=se&keywords=intel%2Bcore%2Bultra%2B7&qid=1768435357&sprefix=intel%2Bcore%2Bultra%2B%2Caps%2C203&sr=8-1&th=1&linkCode=ll1&tag=3dpc043-20&linkId=d7d829f690beed71bb87ff0abad1fb5d&language=en_US&ref_=as_li_ss_tl"
+         }
+        ]
+    }
+}

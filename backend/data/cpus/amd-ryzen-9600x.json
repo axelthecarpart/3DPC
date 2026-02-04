@@ -1,0 +1,60 @@
+{
+    "id": "amd-ryzen-9600x",
+    "specifications": {
+        "cores": {
+            "total": 6,
+            "performance": 6,
+            "efficient": null,
+            "threads": 12
+        },
+        "clocks": {
+            "performance": {
+                "base": 3.9,
+                "boost": 5.4
+            }
+        },
+        "cache": {
+            "l2": 6,
+            "l3": 32
+        },
+        "integratedGraphics": {
+            "model": "AMD Radeon Graphics"
+        },
+        "memory": {
+            "max": 192,
+            "types": ["DDR5"]
+        },
+        "multithreading": true,
+        "pcieSupport": {
+            "version": [5],
+            "lanes": 28,
+            "usable": 24
+        },
+        "lithography": "4nm"
+    },
+    "metadata": {
+        "name": "AMD Ryzen 5 9600X",
+        "manufacturer": "AMD",
+        "ecc": {
+            "support": true,
+            "needMotherboard": true
+        },
+        "tdp": {
+            "base": 65,
+            "max": 140
+        },
+        "microarchitecture": "Zen 5",
+        "socket": "AM5"
+    },
+    "links": {
+        "productPage": "https://www.amd.com/en/products/processors/desktops/ryzen/9000-series/amd-ryzen-5-9600x.html",
+        "sellers": [
+            {
+                "name": "Amazon",
+                "url": "https://www.amazon.com/AMD-RyzenTM-9600X-12-Thread-Processor/dp/B0D6NN6TM7?crid=3622SLE0PFB6M&dib=eyJ2IjoiMSJ9.swpxN4CjqeZWv7Zt08L_LjVUN3UM4XP5kX9cZtTIQXcxXubQ89SGA6a5E4mq7nKpEkFfjogMuARmrQjZRrBAoadPmzs9dmDAAyzTA5KPhsgPD-p2I9ylBDhYsDXhJOx8UYLqn05Eo2iWfs_hrrdc8yzvTXwsHy3mJs5jOrZ5cr57TIo0XxfBwBdLSZJk7ksSdTzBQkd4BrUT7M3ZXC5-Fdv81Fsu17RGQw8rd9wZQpE.GUOfUQo0GzzDltG1qrC0_lCb9r-5gXVwEKcwpL_h1lw&dib_tag=se&keywords=9600x&qid=1768191844&sprefix=9600%2Caps%2C214&sr=8-1&linkCode=ll1&tag=3dpc043-20&linkId=6cd21e17f386aabe61baf684fd5b9025&language=en_US&ref_=as_li_ss_tl"
+         }
+        ],
+        "images": {
+        }
+    }
+}
