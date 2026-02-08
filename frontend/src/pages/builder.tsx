@@ -4,12 +4,11 @@ import { Button } from "@/components/ui/button"
 import { Item, ItemContent, ItemHeader, ItemMedia, ItemTitle } from "@/components/ui/item"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
-import { Cpu, X, Gpu, MemoryStick, Fan, PcCase, CircuitBoard, HardDrive, Cable, Zap, Banknote, Rotate3D, ShoppingCart, Plus, LayoutGrid, List } from "lucide-react"
+import { Cpu, X, Fan, CircuitBoard, HardDrive, Zap, Banknote, Rotate3D, ShoppingCart, LayoutGrid, List } from "lucide-react"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo} from "react"
 
 import AddCpu from "@/components/add-cpu"
-import AddGpu from "@/components/add-gpu"
 import AddStorage from "@/components/add-storage"
 import AddMotherboard from "@/components/add-motherboard"
 
@@ -20,11 +19,10 @@ export default function BuilderPage() {
 
 
     const [selectedCpu, setSelectedCpu] = useState<any>(null);
-    const [selectedGpu, setSelectedGpu] = useState<any>(null);
-    const [selectedMemory, setSelectedMemory] = useState<any>(null);
+    const [selectedGpu] = useState<any>(null);
+    const [selectedMemory] = useState<any>(null);
     const [selectedStorageDevices, setSelectedStorageDevices] = useState<any[]>([]);
     const [cpuImageLoaded, setCpuImageLoaded] = useState(false);
-    const [gpuImageLoaded, setGpuImageLoaded] = useState(false);
     const [storageImageLoadedMap, setStorageImageLoadedMap] = useState<Record<number, boolean>>({});
     const [selectedMotherboard, setSelectedMotherboard] = useState<any>(null);
     const [motherboardImageLoaded, setMotherboardImageLoaded] = useState(false);
