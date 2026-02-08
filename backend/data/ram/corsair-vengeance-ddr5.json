@@ -1,0 +1,51 @@
+{
+    "name": "Corsair Vengeance DDR5",
+    "manufacturer": "Corsair",
+    "type": "DDR5",
+    "formFactor": "DIMM",
+    "configurations": [
+        {
+            "color": "Black",
+            "totalCapacityGB": 16,
+            "sticks": 1,
+            "speed": 5200,
+            "tdp": {
+                "base": 7.6,
+                "max": 7.6
+            },
+            "timings": "40-40-40-77",
+            "voltage": 1.25,
+            "links": {
+                "productPage": "https://www.corsair.com/us/en/p/memory/cmk16gx5m1b5200c40/vengeance-16gb-1x16gb-ddr5-dram-5200mhz-c40-memory-kit-black-cmk16gx5m1b5200c40",
+                "sellers": [
+                    {
+                        "name": "Amazon",
+                        "url": "https://www.amazon.com/CORSAIR-VENGEANCE-5200MHz-Compatible-Computer/dp/B0BKR2S4F1?crid=3SWAL9YP3I9ER&dib=eyJ2IjoiMSJ9.KTX93C9vFICEuy0oUwjkwPUI5abEpRtWJwxMbDH3rmGNym5tfqOpKwDI7irybRyXvhFo7Z_3nLbO3rG-19FXDkQ_66UQhOXGiqYb89UZpRgezDGy8_vLywWxFJ6dqIHzpEIA5uoU5CIJgltoeyBm5CocvK7qMPXC7a3-iWGULpZui83PHnBjWUGKGKYKQlnkJY497br5lHwlZbz5r7bT0zBm-lBJM6tHEXIof0fR9Lw.GuTDuoky-tzui-oF-Q2wrNxxnxZ3l7CsPVWefzoX4t4&dib_tag=se&keywords=corsair%2Bvengeance%2Bddr5&qid=1770356604&sprefix=corsair%2Bvengeance%2Bddr%2Caps%2C223&sr=8-10&th=1&linkCode=ll2&tag=3dpc043-20&linkId=063fb7556dad033ff448d6edca6c136b&language=en_US&ref_=as_li_ss_tl"
+                    }
+                ]
+            }
+        },
+        {
+            "color": "Black",
+            "totalCapacityGB": 32,
+            "sticks": 1,
+            "speed": 5200,
+            "tdp": {
+                "base": 7.6,
+                "max": 7.6
+            },
+            "timings": "40-40-40-77",
+            "voltage": 1.25,
+            "links": {
+                "productPage": "https://www.corsair.com/us/en/p/memory/cmk16gx5m1b5200c40/vengeance-16gb-1x16gb-ddr5-dram-5200mhz-c40-memory-kit-black-cmk16gx5m1b5200c40",
+                "sellers": [
+                    {
+                        "name": "Amazon",
+                        "url": "https://www.amazon.com/CORSAIR-VENGEANCE-5200MHz-Compatible-Computer/dp/B0BKR2S4F1?crid=3SWAL9YP3I9ER&dib=eyJ2IjoiMSJ9.KTX93C9vFICEuy0oUwjkwPUI5abEpRtWJwxMbDH3rmGNym5tfqOpKwDI7irybRyXvhFo7Z_3nLbO3rG-19FXDkQ_66UQhOXGiqYb89UZpRgezDGy8_vLywWxFJ6dqIHzpEIA5uoU5CIJgltoeyBm5CocvK7qMPXC7a3-iWGULpZui83PHnBjWUGKGKYKQlnkJY497br5lHwlZbz5r7bT0zBm-lBJM6tHEXIof0fR9Lw.GuTDuoky-tzui-oF-Q2wrNxxnxZ3l7CsPVWefzoX4t4&dib_tag=se&keywords=corsair%2Bvengeance%2Bddr5&qid=1770356604&sprefix=corsair%2Bvengeance%2Bddr%2Caps%2C223&sr=8-10&th=1&linkCode=ll2&tag=3dpc043-20&linkId=063fb7556dad033ff448d6edca6c136b&language=en_US&ref_=as_li_ss_tl"
+                    }
+                ]
+            }
+        }
+        
+    ]
+}

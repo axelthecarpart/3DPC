@@ -1,257 +1,270 @@
 import { ButtonGroup } from "@/components/ui/button-group"
 import { Separator } from "@/components/ui/separator"
-import { Cpu, X, Gpu, MemoryStick, Fan, PcCase, CircuitBoard, HardDrive, Cable, Zap, Banknote, Rotate3D, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Item, ItemContent, ItemHeader, ItemMedia, ItemTitle } from "@/components/ui/item"
+import { ScrollArea } from "@/components/ui/scroll-area"
+
+import { Cpu, X, Gpu, MemoryStick, Fan, PcCase, CircuitBoard, HardDrive, Cable, Zap, Banknote, Rotate3D, ShoppingCart, Plus, LayoutGrid, List } from "lucide-react"
+
+import { useState, useMemo, useEffect } from "react"
+
 import AddCpu from "@/components/add-cpu"
 import AddGpu from "@/components/add-gpu"
 import AddStorage from "@/components/add-storage"
-import { useState, useMemo } from "react"
+import AddMotherboard from "@/components/add-motherboard"
 
-const apiUrl = "http://localhost:5000"
-
+const apiUrl = "http://api.3dpc.me"
 
 export default function BuilderPage() {
+    const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+
     const [selectedCpu, setSelectedCpu] = useState<any>(null);
     const [selectedGpu, setSelectedGpu] = useState<any>(null);
-    const [selectedStorage, setSelectedStorage] = useState<any>(null);
+    const [selectedMemory, setSelectedMemory] = useState<any>(null);
+    const [selectedStorageDevices, setSelectedStorageDevices] = useState<any[]>([]);
     const [cpuImageLoaded, setCpuImageLoaded] = useState(false);
     const [gpuImageLoaded, setGpuImageLoaded] = useState(false);
-    const [storageImageLoaded, setStorageImageLoaded] = useState(false);
+    const [storageImageLoadedMap, setStorageImageLoadedMap] = useState<Record<number, boolean>>({});
+    const [selectedMotherboard, setSelectedMotherboard] = useState<any>(null);
+    const [motherboardImageLoaded, setMotherboardImageLoaded] = useState(false);
 
-    // find first seller with a non-empty URL for the selected CPU
     const selectedCpuSeller = selectedCpu?.links?.sellers?.find((s: any) => s?.url && s.url.trim() !== "");
+    const selectedMotherboardSeller = selectedMotherboard?.links?.sellers?.find((s: any) => s?.url && s.url.trim() !== "");
 
-    // compute estimated wattage: CPU base TDP + GPU TDP + small system overhead
+
     const wattage = useMemo(() => {
-        const parseNumber = (v: any) => {
-            if (v == null) return 0
-            const n = Number(v)
-            return Number.isFinite(n) ? n : 0
-        }
+    const parseNumber = (v: any) => {
+        if (v == null) return 0
+        const n = Number(v)
+        return Number.isFinite(n) ? n : 0
+    }
 
-        const cpuTdp = parseNumber(
-            selectedCpu?.metadata?.tdp?.max
-        )
+    const cpuTdp = parseNumber(
+        selectedCpu?.metadata?.tdp?.max
+    )
 
-        const gpuTdp = parseNumber(
-            selectedGpu?.Tdp
-        )
+    const gpuTdp = parseNumber(
+        selectedGpu?.Tdp
+    )
 
         return cpuTdp + gpuTdp
     }, [selectedCpu, selectedGpu])
-
-
-
-  return (
-    <>
-    <div className="p-4">
-      <h1 className="text-2xl font-semibold mb-4">PC Builder</h1>
-      <Separator className="mb-4" />
-      <div className="justify-between flex mb-4">
-        <ButtonGroup className="mb-4">
-            <Button variant="outline" size="lg"><Zap />{Math.round(wattage)}W</Button>
-            <Button variant="outline" size="lg"><Banknote />$</Button>
-        </ButtonGroup>
-        <Button variant="default" size="lg" className="ml-4"><Rotate3D />3D View</Button>
-      </div>
-        <div className="flex gap-4">
-        {/* Left side - Main components grid */}
-        <div className="flex-1 w-1/2">
-        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-4 p-1">
-            {/* CPU */}
-            <Item variant="outline" className="p-0 overflow-clip min-h-fit">
-                {selectedCpu ? (
-                    <>
-                        <ItemHeader>
-                            <ItemMedia className="justify-center bg-white w-full p-4 h-32">
-                                {!cpuImageLoaded && (
-                                    <div className="flex justify-center items-center flex-col gap-2">
-                                        <Cpu className="h-12 w-12 text-muted-foreground" />
-                                        <p className="text-muted-foreground text-md">Image Coming Soon!</p>
-                                    </div>
+    return (
+        <div className="p-4">
+            <h1 className="text-2xl font-semibold mb-4">PC Builder</h1>
+            <Separator className="mb-4" />
+            <div className="justify-between flex mb-4">
+                <div className="flex gap-4">
+                <ButtonGroup className="mb-4">
+                    <Button variant="outline" size="lg"><Zap />{Math.round(wattage)}W</Button>
+                    <Button variant="outline" size="lg"><Banknote />$</Button>
+                </ButtonGroup>
+                <ButtonGroup className="mb-4">
+                    <Button variant={viewMode === "grid" ? "default" : "outline"} size="lg" onClick={() => setViewMode('grid')}><LayoutGrid /></Button>
+                    <Button variant={viewMode === "list" ? "default" : "outline"} size="lg" onClick={() => setViewMode('list')}><List /></Button>
+                </ButtonGroup>
+                </div>
+                <Button variant="default" size="lg" className="ml-4" disabled><Rotate3D />3D View</Button>
+            </div>
+            <div>
+                {viewMode === "grid" ? (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 auto-rows-min">
+                            <Item variant="outline" className="p-0 overflow-clip min-h-fit">
+                                {selectedCpu ? (
+                                    <>
+                                        <ItemHeader>
+                                            <ItemMedia className="justify-center bg-white w-full p-4 h-32">
+                                                {!cpuImageLoaded && (
+                                                <div className="flex justify-center items-center flex-col gap-2">
+                                                    <Cpu className="h-12 w-12 text-muted-foreground" />
+                                                    <p className="text-muted-foreground text-md">Image Coming Soon!</p>
+                                                </div>
+                                                )}
+                                                <img 
+                                                    src={`${apiUrl}/data/cpus/images/${selectedCpu.id}.png`} 
+                                                    alt={selectedCpu.metadata?.name} 
+                                                    className={`h-24 object-contain ${cpuImageLoaded ? '' : 'hidden'}`}
+                                                    onLoad={() => setCpuImageLoaded(true)}
+                                                    onError={() => setCpuImageLoaded(false)}
+                                                />
+                                            </ItemMedia>
+                                            </ItemHeader>
+                                        <ItemContent className="p-4">
+                                            <ItemTitle className="text-lg font-semibold mb-2 flex items-center justify-center gap-2 w-full"><Cpu />CPU</ItemTitle>
+                                            <ItemTitle className="line-clamp-2 mb-2 flex items-center justify-center w-full">{selectedCpu.metadata?.name}</ItemTitle>
+                                            <div className="text-sm text-muted-foreground flex-1 p-4">
+                                                <div className="truncate">{selectedCpu.specifications?.cores?.total} Cores / {selectedCpu.specifications?.cores?.threads} Threads</div>
+                                                <div className="truncate">{selectedCpu.specifications?.clocks?.performance?.base} GHz Base / {selectedCpu.specifications?.clocks?.performance?.boost} GHz Boost</div>
+                                                <div className="truncate">{selectedCpu.metadata?.tdp?.base}W TDP</div>
+                                                <div className="truncate">Socket: {selectedCpu.metadata?.socket}</div>
+                                            </div>
+                                            <div className="flex gap-2 mt-4">
+                                                <div className="flex-1"><AddCpu onCpuSelect={(cpu) => { setSelectedCpu(cpu); setCpuImageLoaded(false); }} selectedCpu={selectedCpu}/></div>
+                                                    <Button variant="default" onClick={() => selectedCpuSeller && window.open(selectedCpuSeller.url, '_blank')} disabled={!selectedCpuSeller}>
+                                                        <ShoppingCart />Buy
+                                                    </Button>
+                                                    <Button variant="destructive" size="icon" onClick={() => { setSelectedCpu(null); setCpuImageLoaded(false); }}><X /></Button>
+                                            </div>
+                                        </ItemContent>
+                                    </>
+                                ):(
+                                    <>
+                                        <ItemContent className="flex flex-col items-center justify-center p-4 gap-4" style={{ minHeight: '400px' }}>
+                                            <ItemTitle className="text-lg font-semibold flex items-center gap-2"><Cpu />CPU</ItemTitle>
+                                            <AddCpu onCpuSelect={(cpu) => { setSelectedCpu(cpu); setCpuImageLoaded(false); }} selectedCpu={selectedCpu}/>
+                                        </ItemContent>
+                                    </>
                                 )}
-                                <img 
-                                    src={`${apiUrl}/data/cpus/images/${selectedCpu.id}.png`} 
-                                    alt={selectedCpu.metadata?.name} 
-                                    className={`h-24 object-contain ${cpuImageLoaded ? '' : 'hidden'}`}
-                                    onLoad={() => setCpuImageLoaded(true)}
-                                    onError={() => setCpuImageLoaded(false)}
-                                />
-                            </ItemMedia>
-                        </ItemHeader>
-                        <ItemContent className="p-4">
-                            <ItemTitle className="text-lg font-semibold mb-2"><Cpu />CPU</ItemTitle>
-                            <ItemTitle className="line-clamp-2 mb-2">{selectedCpu.metadata?.name}</ItemTitle>
-                            <div className="text-sm text-muted-foreground space-y-1">
-                                <div className="truncate">{selectedCpu.specifications?.cores?.total} Cores / {selectedCpu.specifications?.cores?.threads} Threads</div>
-                                <div className="truncate">{selectedCpu.specifications?.clocks?.performance?.base} GHz Base / {selectedCpu.specifications?.clocks?.performance?.boost} GHz Boost</div>
-                                <div className="truncate">{selectedCpu.metadata?.tdp?.base}W TDP</div>
-                                <div className="truncate">Socket: {selectedCpu.metadata?.socket}</div>
-                            </div>
-                            <div className="flex gap-2 mt-4">
-                                <div className="flex-1"><AddCpu onCpuSelect={(cpu) => { setSelectedCpu(cpu); setCpuImageLoaded(false); }} selectedCpu={selectedCpu}/></div>
-                                <Button
-                                    variant="default"
-                                    onClick={() => selectedCpuSeller && window.open(selectedCpuSeller.url, '_blank')}
-                                    disabled={!selectedCpuSeller}
-                                >
-                                    <ShoppingCart />Buy
-                                </Button>
-                                <Button variant="destructive" size="icon" onClick={() => { setSelectedCpu(null); setCpuImageLoaded(false); }}><X /></Button>
-                            </div>
-                        </ItemContent>
-                    </>
-                ):(
-                    <>
-                        <ItemContent className="flex flex-col items-center justify-center p-4 gap-4" style={{ minHeight: '400px' }}>
-                            <ItemTitle className="text-lg font-semibold"><Cpu />CPU</ItemTitle>
-                            <AddCpu onCpuSelect={(cpu) => { setSelectedCpu(cpu); setCpuImageLoaded(false); }} selectedCpu={selectedCpu}/>
-                        </ItemContent>
-                    </>
-                )}
-            </Item>
-
-            {/* CPU Cooler */}
-            <Item variant="outline" className="p-0 overflow-clip min-h-fit">
-                <ItemContent className="flex flex-col items-center justify-center p-4 gap-4" style={{ minHeight: '400px' }}>
-                    <ItemTitle className="text-lg font-semibold"><Fan />CPU Cooler</ItemTitle>
-                    <Button variant="outline" className="w-full">Select CPU Cooler</Button>
-                </ItemContent>
-            </Item>
-
-            {/* Motherboard */}
-            <Item variant="outline" className="p-0 overflow-clip min-h-fit">
-                <ItemContent className="flex flex-col items-center justify-center p-4 gap-4" style={{ minHeight: '400px' }}>
-                    <ItemTitle className="text-lg font-semibold"><CircuitBoard />Motherboard</ItemTitle>
-                    <Button variant="outline" className="w-full">Select Motherboard</Button>
-                </ItemContent>
-            </Item>
-            {/* Case */}
-            <Item variant="outline" className="p-0 overflow-clip min-h-fit">
-                <ItemContent className="flex flex-col items-center justify-center p-4 gap-4" style={{ minHeight: '400px' }}>
-                    <ItemTitle className="text-lg font-semibold"><PcCase />Case</ItemTitle>
-                    <Button variant="outline" className="w-full">Select Case</Button>
-                </ItemContent>
-            </Item>
-
-
-
-
-
-            {/* Power Supply */}
-            <Item variant="outline" className="p-0 overflow-clip min-h-fit">
-                <ItemContent className="flex flex-col items-center justify-center p-4 gap-4" style={{ minHeight: '400px' }}>
-                    <ItemTitle className="text-lg font-semibold"><Cable />Power Supply</ItemTitle>
-                    <Button variant="outline" className="w-full">Select Power Supply</Button>
-                </ItemContent>
-            </Item>
-        </div>
-        </div>
-
-        {/* Right side - Storage */}
-        <div className="flex-1 w-1/2 p-1">
-        <div className="flex flex-col gap-4">
-            {/* RAM */}
-            <Item variant="outline" className="p-0 overflow-clip min-h-fit">
-                <ItemContent className="flex flex-col items-center justify-center p-4 gap-4" style={{ minHeight: '400px' }}>
-                    <ItemTitle className="text-lg font-semibold"><MemoryStick />RAM</ItemTitle>
-                    <Button variant="outline" className="w-full">Select RAM</Button>
-                </ItemContent>
-            </Item>
-
-                            {/* Storage */}
-            <Item variant="outline" className="p-0 overflow-clip min-h-fit">
-                {selectedStorage ? (
-                    <>
-                        <ItemHeader>
-                            <ItemMedia className="justify-center bg-white w-full p-4 h-32">
-                                {!storageImageLoaded && (
-                                    <div className="flex justify-center items-center flex-col gap-2">
-                                        <HardDrive className="h-12 w-12 text-muted-foreground" />
-                                        <p className="text-muted-foreground text-md">Image Coming Soon!</p>
-                                    </div>
+                            </Item>
+                            <Item variant="outline" className="p-0 overflow-clip min-h-fit">
+                                <ItemContent className="flex flex-col items-center justify-center p-4 gap-4" style={{ minHeight: '400px' }}>
+                                    <ItemTitle className="text-lg font-semibold flex items-center gap-2"><Fan />CPU Cooler</ItemTitle>
+                                    <Button variant="outline" className="w-full">Select CPU Cooler</Button>
+                                </ItemContent>
+                            </Item>
+                            <Item variant="outline" className="p-0 overflow-clip min-h-fit">
+                                {selectedMotherboard ? (
+                                    <>
+                                        <ItemHeader>
+                                            <ItemMedia className="justify-center bg-white w-full p-4 h-32">
+                                                {!motherboardImageLoaded && (
+                                                    <div className="flex justify-center items-center flex-col gap-2">
+                                                        <CircuitBoard className="h-12 w-12 text-muted-foreground" />
+                                                        <p className="text-muted-foreground text-md">Image Coming Soon!</p>
+                                                    </div>
+                                                )}
+                                                <img 
+                                                    src={`${apiUrl}/data/motherboards/images/${selectedMotherboard.id}.png`} 
+                                                    alt={selectedMotherboard.metadata?.name} 
+                                                    className={`h-24 object-contain ${motherboardImageLoaded ? '' : 'hidden'}`}
+                                                    onLoad={() => setMotherboardImageLoaded(true)}
+                                                    onError={() => setMotherboardImageLoaded(false)}
+                                                />
+                                            </ItemMedia>
+                                        </ItemHeader>
+                                        <ItemContent className="p-4">
+                                            <ItemTitle className="text-lg font-semibold mb-2 flex items-center justify-center gap-2 w-full"><CircuitBoard />Motherboard</ItemTitle>
+                                            <ItemTitle className="line-clamp-2 mb-2 flex items-center justify-center w-full">{selectedMotherboard.metadata?.name}</ItemTitle>
+                                            <div className="text-sm text-muted-foreground flex-1 p-4">
+                                                <div className="truncate">Chipset: {selectedMotherboard.specifications?.chipset}</div>
+                                                <div className="truncate">Socket: {selectedMotherboard.metadata?.socket}</div>
+                                                <div className="truncate">Form Factor: {selectedMotherboard.specifications?.formFactor}</div>
+                                                <div className="truncate">{selectedMotherboard.specifications?.memory?.type} - {selectedMotherboard.specifications?.memory?.slots} Slots</div>
+                                            </div>
+                                            <div className="flex gap-2 mt-4">
+                                                <div className="flex-1"><AddMotherboard onMotherboardSelect={(motherboard) => { setSelectedMotherboard(motherboard); setMotherboardImageLoaded(false); }} selectedMotherboard={selectedMotherboard}/></div>
+                                                <Button
+                                                    variant="default"
+                                                    onClick={() => selectedMotherboardSeller && window.open(selectedMotherboardSeller.url, '_blank')}
+                                                    disabled={!selectedMotherboardSeller}
+                                                >
+                                                    <ShoppingCart />Buy
+                                                </Button>
+                                                <Button variant="destructive" size="icon" onClick={() => { setSelectedMotherboard(null); setMotherboardImageLoaded(false); }}><X /></Button>
+                                            </div>
+                                        </ItemContent>
+                                    </>
+                                ):(
+                                    <>
+                                        <ItemContent className="flex flex-col items-center justify-center p-4 gap-4" style={{ minHeight: '400px' }}>
+                                            <ItemTitle className="text-lg font-semibold flex items-center gap-2"><CircuitBoard />Motherboard</ItemTitle>
+                                            <AddMotherboard onMotherboardSelect={(motherboard) => { setSelectedMotherboard(motherboard); setMotherboardImageLoaded(false); }} selectedMotherboard={selectedMotherboard}/>
+                                        </ItemContent>
+                                    </>
                                 )}
-                                <img 
-                                    src={`${apiUrl}/data/storage/images/${selectedStorage.name?.toLowerCase().replace(/ /g, '-')}.png`} 
-                                    alt={selectedStorage.name} 
-                                    className={`h-24 object-contain ${storageImageLoaded ? '' : 'hidden'}`}
-                                    onLoad={() => setStorageImageLoaded(true)}
-                                    onError={() => setStorageImageLoaded(false)}
-                                />
-                            </ItemMedia>
-                        </ItemHeader>
-                        <ItemContent className="p-4">
-                            <ItemTitle className="text-lg font-semibold mb-2"><HardDrive />Storage</ItemTitle>
-                            <ItemTitle className="line-clamp-2 mb-2">{selectedStorage.name}</ItemTitle>
-                            <div className="text-sm text-muted-foreground space-y-1">
-                                <div className="truncate">{selectedStorage.selectedVariant?.capacityGB >= 1000 ? `${selectedStorage.selectedVariant?.capacityGB / 1000} TB` : `${selectedStorage.selectedVariant?.capacityGB} GB`}</div>
-                                <div className="truncate">Type: {selectedStorage.type}</div>
-                                <div className="truncate">Interface: {selectedStorage.interface?.join(', ')}</div>
-                                <div className="truncate">Form Factor: {selectedStorage.formFactor}</div>
-                            </div>
-                            <div className="flex gap-2 mt-4">
-                                <div className="flex-1"><AddStorage onStorageSelect={(s) => { setSelectedStorage(s); setStorageImageLoaded(false); }} selectedStorage={selectedStorage} /></div>
-                                <Button variant="destructive" size="icon" onClick={() => { setSelectedStorage(null); setStorageImageLoaded(false); }}><X /></Button>
-                            </div>
-                        </ItemContent>
-                    </>
+                            </Item>
+                        </div>    
+                        <div>
+                            <Item variant="outline" className="p-0 overflow-clip min-h-fit">
+                                <ItemContent className="flex flex-col items-center justify-center p-4 gap-4" style={{ minHeight: '400px' }}>
+                                    <ItemTitle className="text-lg font-semibold flex items-center gap-2"><Fan />Memory</ItemTitle>
+                                    {selectedMemory ? (
+                                        <ScrollArea className="w-full h-64">
+                                        
+                                        </ScrollArea>
+                                    ) : (
+                                        <Button variant="outline" className="w-1/2">Select Memory</Button>
+                                    )}
+                                </ItemContent>
+                            </Item>
+                            <Item variant="outline" className="p-0 overflow-clip min-h-fit mt-4">
+                                <ItemContent className="flex flex-col items-center justify-center p-4 gap-4" style={{ minHeight: '400px' }}>
+                                    <ItemTitle className="text-lg font-semibold flex items-center gap-2"><HardDrive />Storage</ItemTitle>
+                                    {selectedStorageDevices.length > 0 ? (
+                                        <ScrollArea className="w-full h-64">
+                                            {selectedStorageDevices.map((storage, index) => (
+                                                <Item key={storage.id || index} variant="outline" className="p-0 overflow-clip min-h-fit mb-2 justify-between">
+                                                    <div className="flex items-stretch h-24">
+                                                        <div className="w-24 bg-white shrink-0 flex items-center justify-center p-2 border-r">
+                                                            <ItemMedia className="justify-center bg-white w-full h-full flex items-center">
+                                                            {!storageImageLoadedMap[index] && (
+                                                                    <HardDrive className="h-8 w-8 text-muted-foreground" />
+                                                            )}
+                                                            </ItemMedia>
+                                                            <img 
+                                                                src={`${apiUrl}/data/storage/images/${storage.id}.png`} 
+                                                                alt={storage.name} 
+                                                                className={`h-full w-full object-contain ${storageImageLoadedMap[index] ? '' : 'hidden'}`}
+                                                                onLoad={() => setStorageImageLoadedMap(prev => ({...prev, [index]: true}))}
+                                                                onError={() => setStorageImageLoadedMap(prev => ({...prev, [index]: false}))}
+                                                            />
+                                                        </div>
+                                                        <div className="align-middle flex-1 p-4">
+                                                            <ItemTitle className="line-clamp-2 mb-2">{storage.name}</ItemTitle>
+                                                            <ScrollArea className="h-16">
+                                                                <div className="space-y-1 pb-4 pr-4 text-muted-foreground">
+                                                                    <div className="truncate">Capacity: {(() => {
+                                                                        const capacityGB = storage.selectedVariant?.capacityGB;
+                                                                        return capacityGB >= 1000 ? `${capacityGB / 1000} TB` : `${capacityGB} GB`;
+                                                                    })()}</div>
+                                                                    <div className="truncate">Type: {storage.type}</div>
+                                                                    <div className="truncate">Interface: {storage.interface?.join(', ') || 'N/A'}</div>
+                                                                    <div className="truncate">Cache: {storage.selectedVariant?.cacheMB ? `${storage.selectedVariant.cacheMB} MB` : 'N/A'}</div>
+                                                                </div>
+                                                            </ScrollArea>
+                                                        </div>
+
+
+                                                    </div>
+                                                        <div className="flex items-center pr-4 gap-4">
+                                                            <Button
+                                                                variant="default"
+                                                                onClick={() => {
+                                                                    const seller = storage.selectedVariant?.links?.sellers?.find((s: any) => s?.url && s.url.trim() !== "");
+                                                                    if (seller) window.open(seller.url, '_blank');
+                                                                }}
+                                                                disabled={!storage.selectedVariant?.links?.sellers?.find((s: any) => s?.url && s.url.trim() !== "")}
+                                                            >
+                                                                <ShoppingCart className="h-4 w-4" />Buy
+                                                            </Button>
+                                                            <Button variant="destructive" size="icon" className="h-8 w-8" onClick={() => {
+                                                                setSelectedStorageDevices((prev) => prev.filter((_, i) => i !== index));
+                                                                setStorageImageLoadedMap((prev) => {
+                                                                    const newMap = { ...prev };
+                                                                    delete newMap[index];
+                                                                    return newMap;
+                                                                });
+                                                            }}><X className="h-4 w-4" /></Button>
+                                                        </div>
+                                                </Item>
+                                            ))}
+                                            <AddStorage onStorageSelect={(storage) => {setSelectedStorageDevices((prev) => [...prev, storage]);}} selectedStorage={null} />
+                                        </ScrollArea>
+                                    ) : (
+                                        <AddStorage onStorageSelect={(storage) => {setSelectedStorageDevices((prev) => [...prev, storage]);}} selectedStorage={selectedStorageDevices[0] ?? null} />
+                                    )}
+                                </ItemContent>
+                            </Item>
+                        </div>                    
+                    </div>
                 ) : (
-                    <ItemContent className="flex flex-col items-center justify-center p-4 gap-4" style={{ minHeight: '400px' }}>
-                        <ItemTitle className="text-lg font-semibold"><HardDrive />Storage</ItemTitle>
-                        <AddStorage onStorageSelect={(s) => { setSelectedStorage(s); setStorageImageLoaded(false); }} selectedStorage={selectedStorage} />
-                    </ItemContent>
+                    <div className="flex flex-col gap-4">
+
+                    </div>
                 )}
-            </Item>
-                        {/* GPU */}
-            <Item variant="outline" className="p-0 overflow-clip min-h-fit">
-                {selectedGpu ? (
-                    <>
-                        <ItemHeader>
-                            <ItemMedia className="justify-center bg-white w-full p-4 h-32">
-                                {!gpuImageLoaded && (
-                                    <div className="flex justify-center items-center flex-col gap-2">
-                                        <Gpu className="h-12 w-12 text-muted-foreground" />
-                                        <p className="text-muted-foreground text-md">Image Coming Soon!</p>
-                                    </div>
-                                )}
-                                <img 
-                                    src={`${apiUrl}/data/gpus/images/${selectedGpu.id}.png`} 
-                                    alt={selectedGpu.name} 
-                                    className={`h-24 object-contain ${gpuImageLoaded ? '' : 'hidden'}`}
-                                    onLoad={() => setGpuImageLoaded(true)}
-                                    onError={() => setGpuImageLoaded(false)}
-                                />
-                            </ItemMedia>
-                        </ItemHeader>
-                        <ItemContent className="p-4">
-                            <ItemTitle className="text-lg font-semibold mb-2"><Gpu />Graphics Card</ItemTitle>
-                            <ItemTitle className="line-clamp-2 mb-2">{selectedGpu.name}</ItemTitle>
-                            <div className="text-sm text-muted-foreground space-y-1">
-                                <div className="truncate">{selectedGpu.memory} GB {selectedGpu.memoryType} Memory</div>
-                                <div className="truncate">{selectedGpu.baseClock} GHz Base / {selectedGpu.boostClock} GHz Boost</div>
-                                <div className="truncate">{selectedGpu.Tdp}W TDP</div>
-                                <div className="font-semibold text-foreground truncate">${selectedGpu.price}</div>
-                            </div>
-                            <div className="flex gap-2 mt-4">
-                                <div className="flex-1"><AddGpu onGpuSelect={(gpu) => { setSelectedGpu(gpu); setGpuImageLoaded(false); }} selectedGpu={selectedGpu}/></div>
-                                <Button variant="destructive" size="icon" onClick={() => { setSelectedGpu(null); setGpuImageLoaded(false); }}><X /></Button>
-                            </div>
-                        </ItemContent>
-                    </>
-                ):(
-                    <>
-                        <ItemContent className="flex flex-col items-center justify-center p-4 gap-4" style={{ minHeight: '400px' }}>
-                            <ItemTitle className="text-lg font-semibold"><Gpu />Graphics Card</ItemTitle>
-                            <AddGpu onGpuSelect={(gpu) => { setSelectedGpu(gpu); setGpuImageLoaded(false); }} selectedGpu={selectedGpu}/>
-                        </ItemContent>
-                    </>
-                )}
-            </Item>
+            </div>
         </div>
-        </div>
-        </div>
-    </div>
-    </>
     )
 }

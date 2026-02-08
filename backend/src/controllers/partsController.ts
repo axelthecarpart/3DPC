@@ -112,6 +112,16 @@ export const getCases = (req: Request, res: Response) => {
   }
 };
 
+export const getMotherboards = (req: Request, res: Response) => {
+  try {
+    const items = readAllJsonInDir('motherboards');
+    res.json(items);
+  } catch (error) {
+    console.error("Error reading motherboards:", error);
+    res.status(500).json({ error: "Failed to load motherboards" });
+  }
+};
+
 export const getPartsByType = (req: Request, res: Response) => {
   try {
     const { type } = req.params; // cpu, gpu, ram, etc.

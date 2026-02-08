@@ -5,6 +5,7 @@ import {
   getRAM,
   getStorage,
   getCases,
+  getMotherboards,
   getPartsByType,
   addPartByType,
 } from "../controllers/partsController";
@@ -17,6 +18,7 @@ router.get("/gpus", getGPUs);
 router.get("/ram", getRAM);
 router.get("/storage", getStorage);
 router.get("/cases", getCases);
+router.get("/motherboards", getMotherboards);
 
 // Generic routes
 router.get("/pc-parts/:type", getPartsByType);

@@ -1,5 +1,10 @@
 {
     "id": "asus-rog-crosshair-x870e-hero",
+    "metadata": {
+        "name": "ASUS ROG Crosshair X870E Hero",
+        "manufacturer": "ASUS",
+        "socket": "AM5"
+    },
     "specifications": {
         "formFactor": "ATX",
         "chipset": "X870E",

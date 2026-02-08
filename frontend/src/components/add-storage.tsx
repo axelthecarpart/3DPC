@@ -64,6 +64,16 @@ export default function AddStorage({ onStorageSelect, selectedStorage }: AddStor
                 if (!hasMatchingInterface) return false
             }
             if (filters.formFactor && filters.formFactor.length > 0 && !filters.formFactor.includes(s.formFactor)) return false
+            
+            // Capacity filter (range)
+            if (filters.capacity && filters.capacity.length === 2) {
+                const [minCapacity, maxCapacity] = filters.capacity
+                const hasMatchingCapacity = s.variants?.some((v: any) => 
+                    v.capacityGB >= minCapacity && v.capacityGB <= maxCapacity
+                )
+                if (!hasMatchingCapacity) return false
+            }
+            
             return true
         })
     }, [storage, filters])
@@ -88,7 +98,7 @@ export default function AddStorage({ onStorageSelect, selectedStorage }: AddStor
             }}
         >
             <DialogTrigger asChild>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-1/2">
                     {selectedStorage ? (
                         <>
                             <ArrowLeftRight />
@@ -185,7 +195,7 @@ export default function AddStorage({ onStorageSelect, selectedStorage }: AddStor
                     </DialogHeader>
                     <div className="flex-1 overflow-y-auto">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-1">
-                        {selectedStorageModel?.variants?.map((variant: any, index: number) => {
+                        {selectedStorageModel?.variants?.map((variant: any) => {
                             const formatCapacity = (gb: number) => gb >= 1000 ? `${gb / 1000} TB` : `${gb} GB`
                             return (
                                 <>

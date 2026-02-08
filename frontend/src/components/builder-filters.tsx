@@ -23,23 +23,35 @@ export function BuilderFilters({ componentType, onFilterChange, components }: Bu
     capacity: number[]
   }>(() => {
     if (componentType === 'cpu' && components.length > 0) {
-      const cores = [...new Set(components.map(cpu => cpu.specifications?.cores?.total || 0).filter(Boolean))].sort((a, b) => a - b)
-      const threads = [...new Set(components.map(cpu => cpu.specifications?.cores?.threads || 0).filter(Boolean))].sort((a, b) => a - b)
-      const tdps = [...new Set(components.map(cpu => cpu.metadata?.tdp?.base || 0).filter(Boolean))].sort((a, b) => a - b)
-      const l2Cache = [...new Set(components.map(cpu => cpu.specifications?.cache?.l2 || 0).filter(Boolean))].sort((a, b) => a - b)
-      const l3Cache = [...new Set(components.map(cpu => cpu.specifications?.cache?.l3 || 0).filter(Boolean))].sort((a, b) => a - b)
+      const cores = [...new Set(components.map(cpu => cpu.specifications?.cores?.total).filter(v => v != null))].sort((a, b) => a - b)
+      const threads = [...new Set(components.map(cpu => cpu.specifications?.cores?.threads).filter(v => v != null))].sort((a, b) => a - b)
+      const tdps = [...new Set(components.map(cpu => cpu.metadata?.tdp?.base).filter(v => v != null))].sort((a, b) => a - b)
+      const l2Cache = [...new Set(components.map(cpu => cpu.specifications?.cache?.l2).filter(v => v != null))].sort((a, b) => a - b)
+      const l3Cache = [...new Set(components.map(cpu => cpu.specifications?.cache?.l3).filter(v => v != null))].sort((a, b) => a - b)
       
       return { cores, threads, tdps, l2Cache, l3Cache, capacity: [] }
     }
     if (componentType === 'storage' && components.length > 0) {
-      const capacity = [...new Set(components.map(storage => storage.specifications?.capacity?.gb || 0).filter(Boolean))].sort((a, b) => a - b)
+      const capacity = [...new Set(
+        components.flatMap(storage => 
+          storage.variants?.map((v: any) => v.capacityGB).filter((v: any) => v != null) || []
+        )
+      )].sort((a, b) => a - b)
+      
       return { cores: [], threads: [], tdps: [], l2Cache: [], l3Cache: [], capacity }
     }
     return { cores: [], threads: [], tdps: [], l2Cache: [], l3Cache: [], capacity: [] }
   }, [components, componentType])
 
   // Calculate dynamic ranges from actual CPU data
-  const ranges = useMemo(() => {
+  const ranges = useMemo<{
+    cores: { min: number; max: number; values: number[] }
+    threads: { min: number; max: number; values: number[] }
+    tdp: { min: number; max: number; values: number[] }
+    l2Cache: { min: number; max: number; values: number[] }
+    l3Cache: { min: number; max: number; values: number[] }
+    capacity: { min: number; max: number; values: number[] }
+  }>(() => {
     if (componentType === 'cpu' && uniqueSortedValues.cores.length > 0) {
       return {
         cores: { 
@@ -66,8 +78,26 @@ export function BuilderFilters({ componentType, onFilterChange, components }: Bu
           min: uniqueSortedValues.l3Cache[0], 
           max: uniqueSortedValues.l3Cache[uniqueSortedValues.l3Cache.length - 1],
           values: uniqueSortedValues.l3Cache
+        },
+        capacity: {
+          min: uniqueSortedValues.capacity.length > 0 ? uniqueSortedValues.capacity[0] : 0,
+          max: uniqueSortedValues.capacity.length > 0 ? uniqueSortedValues.capacity[uniqueSortedValues.capacity.length - 1] : 0,
+          values: uniqueSortedValues.capacity
         }
-        
+      }
+    }
+    if (componentType === 'storage' && uniqueSortedValues.capacity.length > 0) {
+      return {
+        cores: { min: 0, max: 256, values: [] },
+        threads: { min: 0, max: 512, values: [] },
+        tdp: { min: 0, max: 1000, values: [] },
+        l2Cache: { min: 0, max: 256, values: [] },
+        l3Cache: { min: 0, max: 256, values: [] },
+        capacity: {
+          min: uniqueSortedValues.capacity[0],
+          max: uniqueSortedValues.capacity[uniqueSortedValues.capacity.length - 1],
+          values: uniqueSortedValues.capacity
+        }
       }
     }
     return { 
@@ -75,7 +105,8 @@ export function BuilderFilters({ componentType, onFilterChange, components }: Bu
       threads: { min: 0, max: 512, values: [] }, 
       tdp: { min: 0, max: 1000, values: [] },
       l2Cache: { min: 0, max: 256, values: [] },
-      l3Cache: { min: 0, max: 256, values: [] }
+      l3Cache: { min: 0, max: 256, values: [] },
+      capacity: { min: 0, max: 4000, values: [] }
     }
   }, [uniqueSortedValues, componentType])
 
@@ -90,9 +121,29 @@ export function BuilderFilters({ componentType, onFilterChange, components }: Bu
       
       return { manufacturers, sockets, hasGpu }
     }
+    if (componentType === 'motherboard' && components.length > 0) {
+      const manufacturers = [...new Set(components.map(mb => mb.metadata?.manufacturer).filter(Boolean))]
+      const sockets = [...new Set(components.map(mb => mb.metadata?.socket).filter(Boolean))]
+      const chipsets = [...new Set(components.map(mb => mb.specifications?.chipset).filter(Boolean))]
+      const formFactors = [...new Set(components.map(mb => mb.specifications?.formFactor).filter(Boolean))]
+      const memoryTypes = [...new Set(components.map(mb => mb.specifications?.memory?.type).filter(Boolean))]
+      
+      return { manufacturers, sockets, chipsets, formFactors, memoryTypes }
+    }
     if (componentType === 'storage' && components.length > 0) {
       const manufacturers = [...new Set(components.map(storage => storage.manufacturer || storage.name?.split(' ')[0]).filter(Boolean))]
-      return { manufacturers, sockets: [], hasGpu: [] }
+      const types = [...new Set(components.map(storage => storage.type).filter(Boolean))]
+      const interfaces = [...new Set(components.flatMap(storage => storage.interface || []).filter(Boolean))]
+      const formFactors = [...new Set(components.map(storage => storage.formFactor).filter(Boolean))]
+      
+      // Get all unique capacities from variants
+      const capacities = [...new Set(
+        components.flatMap(storage => 
+          storage.variants?.map((v: any) => v.capacityGB).filter(Boolean) || []
+        )
+      )].sort((a, b) => a - b)
+      
+      return { manufacturers, types, interfaces, formFactors, capacities }
     }
     return { manufacturers: [], sockets: [], hasGpu: [] }
   }, [components, componentType])
@@ -166,7 +217,7 @@ export function BuilderFilters({ componentType, onFilterChange, components }: Bu
           )}
 
           {/* Socket Filter */}
-          {uniqueValues.sockets.length > 0 && (
+          {Array.isArray(uniqueValues.sockets) && uniqueValues.sockets.length > 0 && (
             <>
               <div>
                 <Label className="text-sm font-medium mb-2 block">Socket</Label>
@@ -344,7 +395,7 @@ export function BuilderFilters({ componentType, onFilterChange, components }: Bu
           )}
 
           {/* Integrated Graphics Filter */}
-          {uniqueValues.hasGpu.length > 0 && (
+          {Array.isArray(uniqueValues.hasGpu) && uniqueValues.hasGpu.length > 0 && (
             <div>
               <Label className="text-sm font-medium mb-2 block">Integrated Graphics</Label>
               <div className="space-y-2">
@@ -471,8 +522,166 @@ export function BuilderFilters({ componentType, onFilterChange, components }: Bu
       </div>
     )
   }
+  if (componentType === 'motherboard') {
+    return (
+      <div className="w-64 h-fit rounded-lg border bg-card text-card-foreground shadow-sm">
+        <div className="flex flex-col space-y-1.5 p-6">
+          <h3 className="text-2xl font-semibold leading-none tracking-tight">Filters</h3>
+        </div>
+        <div className="p-6 pt-0 space-y-4">
+          {/* Manufacturer Filter */}
+          {uniqueValues.manufacturers && uniqueValues.manufacturers.length > 0 && (
+            <>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Manufacturer</Label>
+                <div className="space-y-2">
+                  {uniqueValues.manufacturers.map((brand) => (
+                    <div key={brand} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`manufacturer-${brand}`}
+                        checked={filters.manufacturer?.includes(brand)}
+                        onCheckedChange={(checked) => {
+                          const current = filters.manufacturer || []
+                          const updated = checked
+                            ? [...current, brand]
+                            : current.filter((b: string) => b !== brand)
+                          updateFilter('manufacturer', updated)
+                        }}
+                      />
+                      <label htmlFor={`manufacturer-${brand}`} className="text-sm cursor-pointer">
+                        {brand}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
+
+          {/* Socket Filter */}
+          {uniqueValues.sockets && uniqueValues.sockets.length > 0 && (
+            <>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Socket</Label>
+                <div className="space-y-2">
+                  {uniqueValues.sockets.map((socket) => (
+                    <div key={socket} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`socket-${socket}`}
+                        checked={filters.socket?.includes(socket)}
+                        onCheckedChange={(checked) => {
+                          const current = filters.socket || []
+                          const updated = checked
+                            ? [...current, socket]
+                            : current.filter((s: string) => s !== socket)
+                          updateFilter('socket', updated)
+                        }}
+                      />
+                      <label htmlFor={`socket-${socket}`} className="text-sm cursor-pointer">
+                        {socket}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
+
+          {/* Chipset Filter */}
+          {uniqueValues.chipsets && uniqueValues.chipsets.length > 0 && (
+            <>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Chipset</Label>
+                <div className="space-y-2">
+                  {uniqueValues.chipsets.map((chipset) => (
+                    <div key={chipset} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`chipset-${chipset}`}
+                        checked={filters.chipset?.includes(chipset)}
+                        onCheckedChange={(checked) => {
+                          const current = filters.chipset || []
+                          const updated = checked
+                            ? [...current, chipset]
+                            : current.filter((c: string) => c !== chipset)
+                          updateFilter('chipset', updated)
+                        }}
+                      />
+                      <label htmlFor={`chipset-${chipset}`} className="text-sm cursor-pointer">
+                        {chipset}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
+
+          {/* Form Factor Filter */}
+          {uniqueValues.formFactors && uniqueValues.formFactors.length > 0 && (
+            <>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Form Factor</Label>
+                <div className="space-y-2">
+                  {uniqueValues.formFactors.map((formFactor) => (
+                    <div key={formFactor} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`formFactor-${formFactor}`}
+                        checked={filters.formFactor?.includes(formFactor)}
+                        onCheckedChange={(checked) => {
+                          const current = filters.formFactor || []
+                          const updated = checked
+                            ? [...current, formFactor]
+                            : current.filter((f: string) => f !== formFactor)
+                          updateFilter('formFactor', updated)
+                        }}
+                      />
+                      <label htmlFor={`formFactor-${formFactor}`} className="text-sm cursor-pointer">
+                        {formFactor}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
+
+          {/* Memory Type Filter */}
+          {uniqueValues.memoryTypes && uniqueValues.memoryTypes.length > 0 && (
+            <>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Memory Type</Label>
+                <div className="space-y-2">
+                  {uniqueValues.memoryTypes.map((memoryType) => (
+                    <div key={memoryType} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`memoryType-${memoryType}`}
+                        checked={filters.memoryType?.includes(memoryType)}
+                        onCheckedChange={(checked) => {
+                          const current = filters.memoryType || []
+                          const updated = checked
+                            ? [...current, memoryType]
+                            : current.filter((m: string) => m !== memoryType)
+                          updateFilter('memoryType', updated)
+                        }}
+                      />
+                      <label htmlFor={`memoryType-${memoryType}`} className="text-sm cursor-pointer">
+                        {memoryType}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    )
+  }
   if (componentType === 'storage') {
-    // Storage filters can be added here in the future
     return (
       <div className="w-64 h-fit rounded-lg border bg-card text-card-foreground shadow-sm">
         <div className="flex flex-col space-y-1.5 p-6">
@@ -503,9 +712,168 @@ export function BuilderFilters({ componentType, onFilterChange, components }: Bu
                     </div>
                   ))}
                 </div>
+              </div>
+              <Separator />
+            </>
+          )}
+
+          {/* Type Filter (SSD/HDD) */}
+          {uniqueValues.types && uniqueValues.types.length > 0 && (
+            <>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Type</Label>
+                <div className="space-y-2">
+                  {uniqueValues.types.map((type) => (
+                    <div key={type} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`type-${type}`}
+                        checked={filters.type?.includes(type)}
+                        onCheckedChange={(checked) => {
+                          const current = filters.type || []
+                          const updated = checked
+                            ? [...current, type]
+                            : current.filter((t: string) => t !== type)
+                          updateFilter('type', updated)
+                        }}
+                      />
+                      <label htmlFor={`type-${type}`} className="text-sm cursor-pointer">
+                        {type}
+                      </label>
+                    </div>
+                  ))}
                 </div>
-            </>)
-            }
+              </div>
+              <Separator />
+            </>
+          )}
+
+          {/* Interface Filter */}
+          {uniqueValues.interfaces && uniqueValues.interfaces.length > 0 && (
+            <>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Interface</Label>
+                <div className="space-y-2">
+                  {uniqueValues.interfaces.map((iface) => (
+                    <div key={iface} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`interface-${iface}`}
+                        checked={filters.interface?.includes(iface)}
+                        onCheckedChange={(checked) => {
+                          const current = filters.interface || []
+                          const updated = checked
+                            ? [...current, iface]
+                            : current.filter((i: string) => i !== iface)
+                          updateFilter('interface', updated)
+                        }}
+                      />
+                      <label htmlFor={`interface-${iface}`} className="text-sm cursor-pointer">
+                        {iface}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
+
+          {/* Form Factor Filter */}
+          {uniqueValues.formFactors && uniqueValues.formFactors.length > 0 && (
+            <>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Form Factor</Label>
+                <div className="space-y-2">
+                  {uniqueValues.formFactors.map((formFactor) => (
+                    <div key={formFactor} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`formFactor-${formFactor}`}
+                        checked={filters.formFactor?.includes(formFactor)}
+                        onCheckedChange={(checked) => {
+                          const current = filters.formFactor || []
+                          const updated = checked
+                            ? [...current, formFactor]
+                            : current.filter((f: string) => f !== formFactor)
+                          updateFilter('formFactor', updated)
+                        }}
+                      />
+                      <label htmlFor={`formFactor-${formFactor}`} className="text-sm cursor-pointer">
+                        {formFactor}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
+
+          {/* Capacity Filter */}
+          {uniqueValues.capacities && uniqueValues.capacities.length > 0 && ranges.capacity && ranges.capacity.values.length > 0 && (
+            <>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Capacity</Label>
+                <div className="relative">
+                  <Slider
+                    min={0}
+                    max={ranges.capacity.values.length - 1}
+                    step={1}
+                    value={[
+                      filters.capacity?.[0] != null 
+                        ? ranges.capacity.values.indexOf(filters.capacity[0])
+                        : 0,
+                      filters.capacity?.[1] != null
+                        ? ranges.capacity.values.indexOf(filters.capacity[1])
+                        : ranges.capacity.values.length - 1
+                    ]}
+                    onValueChange={(value) => {
+                      const actualValues = [
+                        ranges.capacity.values[value[0]],
+                        ranges.capacity.values[value[1]]
+                      ]
+                      updateFilter('capacity', actualValues)
+                    }}
+                    className="mt-2"
+                  />
+                  <div className="relative h-6 mt-1">
+                    <span
+                      className="absolute text-xs text-muted-foreground pointer-events-none"
+                      style={{
+                        left: `${getThumbPosition(
+                          filters.capacity?.[0] != null ? ranges.capacity.values.indexOf(filters.capacity[0]) : 0,
+                          0,
+                          ranges.capacity.values.length - 1
+                        )}%`,
+                        whiteSpace: 'nowrap',
+                        ...labelCommon
+                      }}
+                    >
+                      {(() => {
+                        const gb = filters.capacity?.[0] || ranges.capacity.min
+                        return gb >= 1000 ? `${gb / 1000} TB` : `${gb} GB`
+                      })()}
+                    </span>
+                    <span
+                      className="absolute text-xs text-muted-foreground pointer-events-none"
+                      style={{
+                        left: `${getThumbPosition(
+                          filters.capacity?.[1] != null ? ranges.capacity.values.indexOf(filters.capacity[1]) : ranges.capacity.values.length - 1,
+                          0,
+                          ranges.capacity.values.length - 1
+                        )}%`,
+                        whiteSpace: 'nowrap',
+                        ...labelCommon
+                      }}
+                    >
+                      {(() => {
+                        const gb = filters.capacity?.[1] || ranges.capacity.max
+                        return gb >= 1000 ? `${gb / 1000} TB` : `${gb} GB`
+                      })()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     )
