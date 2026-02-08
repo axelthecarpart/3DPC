@@ -12,7 +12,7 @@ import AddCpu from "@/components/add-cpu"
 import AddStorage from "@/components/add-storage"
 import AddMotherboard from "@/components/add-motherboard"
 
-const apiUrl = "http://api.3dpc.me"
+const apiUrl = "https://api.3dpc.me"
 
 export default function BuilderPage() {
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
