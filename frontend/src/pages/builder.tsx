@@ -6,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 
 import { Cpu, X, Fan, CircuitBoard, HardDrive, Zap, Banknote, Rotate3D, ShoppingCart, LayoutGrid, List } from "lucide-react"
 
-import { useState, useMemo} from "react"
+import { useState, useMemo } from "react"
 
 import AddCpu from "@/components/add-cpu"
 import AddStorage from "@/components/add-storage"

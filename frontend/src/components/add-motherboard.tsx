@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 
-import { Plus, Cpu, ArrowLeftRight, CircuitBoard } from "lucide-react"
+import { Plus, ArrowLeftRight, CircuitBoard } from "lucide-react"
 const apiUrl = "http://localhost:5000" // Changed from 5000 to 3000
 import { BuilderFilters } from "@/components/builder-filters"
 import { useState, useMemo } from "react"
