@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button"
 
 import { Plus, ArrowLeftRight, CircuitBoard } from "lucide-react"
-const apiUrl = "http://localhost:5000" // Changed from 5000 to 3000
+const apiUrl = "https://api.3dpc.me" // Changed from 5000 to 3000
 import { BuilderFilters } from "@/components/builder-filters"
 import { useState, useMemo } from "react"
 
@@ -39,7 +39,7 @@ export default function AddMotherboard({ onMotherboardSelect, selectedMotherboar
         setLoading(true)
         setError(null)
         try {
-            const response = await fetch(`${apiUrl}/api/parts/motherboards`) // Updated endpoint
+            const response = await fetch(`${apiUrl}/motherboards`)
             if (!response.ok) throw new Error("Failed to fetch motherboards")
             const data = await response.json()
             setMotherboards(data || []) // Data is now directly an array, not data.items

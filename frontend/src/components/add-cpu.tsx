@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button"
 
 import { Plus, Cpu, ArrowLeftRight } from "lucide-react"
-const apiUrl = "http://localhost:5000" // Changed from 5000 to 3000
+const apiUrl = "https://api.3dpc.me"
 import { BuilderFilters } from "@/components/builder-filters"
 import { useState, useMemo } from "react"
 
@@ -39,7 +39,7 @@ export default function AddCpu({ onCpuSelect, selectedCpu }: AddCpuProps) {
         setLoading(true)
         setError(null)
         try {
-            const response = await fetch(`${apiUrl}/api/parts/cpus`) // Updated endpoint
+            const response = await fetch(`${apiUrl}/cpus`)
             if (!response.ok) throw new Error("Failed to fetch CPUs")
             const data = await response.json()
             setCpus(data || []) // Data is now directly an array, not data.items

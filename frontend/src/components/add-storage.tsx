@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button"
 
 import { Plus, HardDrive, ArrowLeftRight } from "lucide-react"
-const apiUrl = "http://localhost:5000"
+const apiUrl = "https://api.3dpc.me"
 import { BuilderFilters } from "@/components/builder-filters"
 import { useState, useMemo } from "react"
 
@@ -41,7 +41,7 @@ export default function AddStorage({ onStorageSelect, selectedStorage }: AddStor
         setLoading(true)
         setError(null)
         try {
-            const response = await fetch(`${apiUrl}/api/parts/storage`)
+            const response = await fetch(`${apiUrl}/storage`)
             if (!response.ok) throw new Error("Failed to fetch Storage")
             const data = await response.json()
             setstorage(data || [])
