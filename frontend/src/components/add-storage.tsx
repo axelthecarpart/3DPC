@@ -44,7 +44,7 @@ export default function AddStorage({ onStorageSelect, selectedStorage }: AddStor
             const response = await fetch(`${apiUrl}/storage`)
             if (!response.ok) throw new Error("Failed to fetch Storage")
             const data = await response.json()
-            setstorage(data || [])
+            setstorage((Array.isArray(data) ? data.map((item: any) => item.data) : []) || [])
         } catch (err) {
             setError(err instanceof Error ? err.message : "An error occured")
         } finally {

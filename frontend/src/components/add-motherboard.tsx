@@ -42,7 +42,7 @@ export default function AddMotherboard({ onMotherboardSelect, selectedMotherboar
             const response = await fetch(`${apiUrl}/motherboards`)
             if (!response.ok) throw new Error("Failed to fetch motherboards")
             const data = await response.json()
-            setMotherboards(data || []) // Data is now directly an array, not data.items
+            setMotherboards((Array.isArray(data) ? data.map((item: any) => item.data) : []) || [])
         } catch (err) {
             setError(err instanceof Error ? err.message: "An error occured")
         } finally {

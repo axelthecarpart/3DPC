@@ -42,7 +42,7 @@ export default function AddCpu({ onCpuSelect, selectedCpu }: AddCpuProps) {
             const response = await fetch(`${apiUrl}/cpus`)
             if (!response.ok) throw new Error("Failed to fetch CPUs")
             const data = await response.json()
-            setCpus(data || []) // Data is now directly an array, not data.items
+            setCpus((Array.isArray(data) ? data.map((item: any) => item.data) : []) || [])
         } catch (err) {
             setError(err instanceof Error ? err.message: "An error occured")
         } finally {
