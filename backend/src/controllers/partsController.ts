@@ -4,6 +4,30 @@ import path from "path";
 
 const dataDir = path.join(__dirname, "../../data");
 
+// Helper function to transform detailed CPU format to simplified format
+const transformCPU = (detailedCpu: any) => {
+  return {
+    id: detailedCpu.id,
+    name: detailedCpu.metadata?.name,
+    manufacturer: detailedCpu.metadata?.manufacturer,
+    cores: detailedCpu.specifications?.cores?.total ?? null,
+    threads: detailedCpu.specifications?.cores?.threads ?? null,
+    // Additional fields for display and future expansion
+    socket: detailedCpu.metadata?.socket,
+    microarchitecture: detailedCpu.metadata?.microarchitecture,
+    tdp: detailedCpu.metadata?.tdp?.base,
+    tdpMax: detailedCpu.metadata?.tdp?.max,
+    clocks: detailedCpu.specifications?.clocks?.performance,
+    cache: detailedCpu.specifications?.cache,
+    integratedGraphics: detailedCpu.specifications?.integratedGraphics,
+    lithography: detailedCpu.specifications?.lithography,
+    ecc: detailedCpu.metadata?.ecc,
+    pcieSupport: detailedCpu.specifications?.pcieSupport,
+    memory: detailedCpu.specifications?.memory,
+    multithreading: detailedCpu.specifications?.multithreading,
+  };
+};
+
 // Helper function to read all CPU files from the cpus directory
 const readAllCPUs = () => {
   const cpusDir = path.join(dataDir, "cpus");
@@ -19,8 +43,9 @@ const readAllCPUs = () => {
     if (stat.isFile() && !file.endsWith(".py")) {
       try {
         const content = fs.readFileSync(filePath, "utf-8");
-        const cpu = JSON.parse(content);
-        cpus.push(cpu);
+        const detailedCpu = JSON.parse(content);
+        const transformedCpu = transformCPU(detailedCpu);
+        cpus.push(transformedCpu);
       } catch (error) {
         console.error(`Error reading CPU file ${file}:`, error);
       }

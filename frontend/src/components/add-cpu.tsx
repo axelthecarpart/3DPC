@@ -16,11 +16,12 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 
 import { Plus, Cpu, ArrowLeftRight } from "lucide-react"
 const apiUrl = "https://api.3dpc.me"
 import { BuilderFilters } from "@/components/builder-filters"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 
 
 interface AddCpuProps {
@@ -30,70 +31,81 @@ interface AddCpuProps {
 
 export default function AddCpu({ onCpuSelect, selectedCpu }: AddCpuProps) {
     const [cpus, setCpus] = useState<any[]>([]);
+    const [initialCpus, setInitialCpus] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [filters, setFilters] = useState<Record<string, any>>({});
     const [dialogOpen, setDialogOpen] = useState(false);
 
-    const fetchCPUs = async () => {
+    const fetchCPUs = async (currentFilters: Record<string, any>) => {
         setLoading(true)
         setError(null)
         try {
-            const response = await fetch(`${apiUrl}/cpus`)
+            const url = `${apiUrl}/cpus`
+
+            const response = await fetch(url)
             if (!response.ok) throw new Error("Failed to fetch CPUs")
             const data = await response.json()
-            setCpus((Array.isArray(data) ? data.map((item: any) => item.data) : []) || [])
+            
+            const resultList = Array.isArray(data) ? data : [];
+            setCpus(resultList)
+            
+            if (Object.keys(currentFilters).length === 0 && initialCpus.length === 0) {
+                 setInitialCpus(resultList);
+            }
         } catch (err) {
             setError(err instanceof Error ? err.message: "An error occured")
         } finally {
             setLoading(false)
         }
     }
+
+    useEffect(() => {
+        if (dialogOpen) {
+            const timeoutId = setTimeout(() => {
+                 fetchCPUs(filters)
+            }, 300)
+            return () => clearTimeout(timeoutId)
+        }
+    }, [filters, dialogOpen])
         
     const filteredCpus = useMemo(() => {
         return cpus.filter((cpu) => {
-            // Extract manufacturer from CPU name (e.g., "AMD Ryzen..." -> "AMD")
-            const manufacturer = cpu.metadata?.manufacturer
-            
             // Manufacturer filter
-            if (filters.manufacturer && filters.manufacturer.length > 0 && !filters.manufacturer.includes(manufacturer)) {
-                return false;
-            }
-            // Socket filter
-            if (filters.socket && filters.socket.length > 0 && !filters.socket.includes(cpu.metadata?.socket)) {
+            if (filters.manufacturer && filters.manufacturer.length > 0 && !filters.manufacturer.includes(cpu.manufacturer)) {
                 return false;
             }
             // Cores range filter
             if (filters.cores && Array.isArray(filters.cores)) {
                 const [min, max] = filters.cores;
-                const totalCores = cpu.specifications?.cores?.total || 0;
+                const totalCores = cpu.cores || 0;
                 if (totalCores < min || totalCores > max) return false;
             }
             // Threads range filter
             if (filters.threads && Array.isArray(filters.threads)) {
                 const [min, max] = filters.threads;
-                const threads = cpu.specifications?.cores?.threads || 0;
+                const threads = cpu.threads || 0;
                 if (threads < min || threads > max) return false;
             }
             // TDP range filter
             if (filters.tdp && Array.isArray(filters.tdp)) {
                 const [min, max] = filters.tdp;
-                const baseTdp = cpu.metadata?.tdp?.base || 0;
+                const baseTdp = cpu.base_tdp || 0;
                 if (baseTdp < min || baseTdp > max) return false;
             }
             // Integrated Graphics filter
             if (filters.hasGpu && filters.hasGpu.length > 0) {
-                const hasGpu = cpu.specifications?.integratedGraphics?.model ? "Yes" : "No";
+                const hasGpu = cpu.graphics ? "Yes" : "No";
                 if (!filters.hasGpu.includes(hasGpu)) return false;
             }
             if (filters.l3Cache && Array.isArray(filters.l3Cache)) {
                 const [min, max] = filters.l3Cache;
-                const l3 = cpu.specifications?.cache?.l3 || 0;
+                const l3 = cpu.l3_cache || 0;
                 if (l3 < min || l3 > max) return false;
             }
             if (filters.l2Cache && Array.isArray(filters.l2Cache)) {
                 const [min, max] = filters.l2Cache;
-                const l2 = cpu.specifications?.cache?.l2 || 0;
+                const l2 = cpu.l2_cache || 0;
                 if (l2 < min || l2 > max) return false;
             }
             return true;
@@ -105,10 +117,7 @@ export default function AddCpu({ onCpuSelect, selectedCpu }: AddCpuProps) {
         setDialogOpen(false);
     };
   return (
-    <Dialog open={dialogOpen} onOpenChange={(open) => {
-                setDialogOpen(open);
-                if (open) fetchCPUs();
-            }}>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
                     <Button variant="outline" className="w-full">
                         {selectedCpu ? (
@@ -131,18 +140,34 @@ export default function AddCpu({ onCpuSelect, selectedCpu }: AddCpuProps) {
                     <div className="flex-1 flex gap-4 overflow-hidden">
                         <div className="flex-1 overflow-y-auto">
                             <div className="flex gap-4">
-                                <BuilderFilters componentType="cpu" onFilterChange={setFilters} components={cpus} />
+                                <BuilderFilters componentType="cpu" onFilterChange={setFilters} components={initialCpus.length > 0 ? initialCpus : cpus} />
                                 <div className="flex-1">
-                                    {loading && <p>Loading...</p>}
                                     {error && <p className="text-red-500">{error}</p>}
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-1">
-                                        {filteredCpus.map((cpu: any, index: number) => (
+                                        {loading && Array.from({ length: 8 }).map((_, i) => (
+                                            <Item key={i} variant="outline" className="p-0 overflow-clip">
+                                                <ItemHeader className="justify-center bg-white p-4 h-32">
+                                                </ItemHeader>
+                                                <ItemContent className="p-4">
+                                                    <Skeleton className="h-4 mb-4 w-1/2" />
+                                                    <div className="space-y-2">
+                                                        <Skeleton className="h-4 w-3/5" />
+                                                        <Skeleton className="h-4 w-4/5" />
+                                                        <Skeleton className="h-4 w-3/5" />
+                                                    </div>
+                                                </ItemContent>
+                                                <ItemFooter className="p-4 pt-0">
+                                                    <Skeleton className="h-9 w-16" />
+                                                </ItemFooter>
+                                            </Item>
+                                        ))}
+                                        {!loading && filteredCpus.map((cpu: any, index: number) => (
                                         <Item key={cpu.id || index} variant="outline" className="p-0 overflow-clip">
                                             <ItemHeader className="justify-center bg-white p-4 h-32">
                                                 <ItemMedia className="h-full flex items-center justify-center">
                                                     <img 
                                                         src={`${apiUrl}/data/cpus/images/${cpu.id}.png`}
-                                                        alt={cpu.metadata?.name} 
+                                                        alt={cpu.name} 
                                                         className="h-24 object-contain" 
                                                         onError={(e) => {
                                                             e.currentTarget.style.display = 'none';
@@ -156,16 +181,15 @@ export default function AddCpu({ onCpuSelect, selectedCpu }: AddCpuProps) {
                                                 </ItemMedia>
                                             </ItemHeader>
                                             <ItemContent className="p-4">
-                                                <ItemTitle className="line-clamp-2 mb-2">{cpu.metadata?.name}</ItemTitle>
+                                                <ItemTitle className="line-clamp-2 mb-2">{cpu.name}</ItemTitle>
                                                 <div className="text-sm text-muted-foreground space-y-1">
                                                     <div className="truncate">
-                                                        {cpu.specifications?.cores?.total} Cores / {cpu.specifications?.cores?.threads} Threads
+                                                        {cpu.cores} Cores / {cpu.threads} Threads
                                                     </div>
                                                     <div className="truncate">
-                                                        {cpu.specifications?.clocks?.performance?.base} GHz Base / {cpu.specifications?.clocks?.performance?.boost} GHz Boost
+                                                        {cpu.base_clock} GHz Base / {cpu.boost_clock} GHz Boost
                                                     </div>
-                                                    <div className="truncate">{cpu.metadata?.tdp?.base}W TDP</div>
-                                                    <div className="truncate">Socket: {cpu.metadata?.socket}</div>
+                                                    <div className="truncate">{cpu.base_tdp}W TDP</div>
                                                 </div>
                                             </ItemContent>
                                             <ItemFooter className="p-4 pt-0">

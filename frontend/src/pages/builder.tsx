@@ -39,7 +39,7 @@ export default function BuilderPage() {
     }
 
     const cpuTdp = parseNumber(
-        selectedCpu?.metadata?.tdp?.max
+        selectedCpu?.tdpMax ?? selectedCpu?.tdp
     )
 
     const gpuTdp = parseNumber(
@@ -82,7 +82,7 @@ export default function BuilderPage() {
                                                 )}
                                                 <img 
                                                     src={`${apiUrl}/data/cpus/images/${selectedCpu.id}.png`} 
-                                                    alt={selectedCpu.metadata?.name} 
+                                                    alt={selectedCpu.name} 
                                                     className={`h-24 object-contain ${cpuImageLoaded ? '' : 'hidden'}`}
                                                     onLoad={() => setCpuImageLoaded(true)}
                                                     onError={() => setCpuImageLoaded(false)}
@@ -91,12 +91,12 @@ export default function BuilderPage() {
                                             </ItemHeader>
                                         <ItemContent className="p-4">
                                             <ItemTitle className="text-lg font-semibold mb-2 flex items-center justify-center gap-2 w-full"><Cpu />CPU</ItemTitle>
-                                            <ItemTitle className="line-clamp-2 mb-2 flex items-center justify-center w-full">{selectedCpu.metadata?.name}</ItemTitle>
+                                            <ItemTitle className="line-clamp-2 mb-2 flex items-center justify-center w-full">{selectedCpu.name}</ItemTitle>
                                             <div className="text-sm text-muted-foreground flex-1 p-4">
-                                                <div className="truncate">{selectedCpu.specifications?.cores?.total} Cores / {selectedCpu.specifications?.cores?.threads} Threads</div>
-                                                <div className="truncate">{selectedCpu.specifications?.clocks?.performance?.base} GHz Base / {selectedCpu.specifications?.clocks?.performance?.boost} GHz Boost</div>
-                                                <div className="truncate">{selectedCpu.metadata?.tdp?.base}W TDP</div>
-                                                <div className="truncate">Socket: {selectedCpu.metadata?.socket}</div>
+                                                <div className="truncate">{selectedCpu.cores} Cores / {selectedCpu.threads} Threads</div>
+                                                <div className="truncate">{selectedCpu.clocks?.base} GHz Base / {selectedCpu.clocks?.boost} GHz Boost</div>
+                                                <div className="truncate">{selectedCpu.tdp}W TDP</div>
+                                                <div className="truncate">Socket: {selectedCpu.socket}</div>
                                             </div>
                                             <div className="flex gap-2 mt-4">
                                                 <div className="flex-1"><AddCpu onCpuSelect={(cpu) => { setSelectedCpu(cpu); setCpuImageLoaded(false); }} selectedCpu={selectedCpu}/></div>

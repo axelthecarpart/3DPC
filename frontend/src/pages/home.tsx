@@ -6,7 +6,7 @@ import { Hammer } from 'lucide-react'
 
 export default function HomePage() {
     return (
-        <div className="flex flex-col items-center justify-center h-[80vh]">
+        <div className="flex flex-col items-center justify-center h-screen">
             <div className="text-center">
                 <h1 className="text-3xl font-bold">3DPC</h1>
                 <br></br>

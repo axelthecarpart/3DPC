@@ -23,11 +23,11 @@ export function BuilderFilters({ componentType, onFilterChange, components }: Bu
     capacity: number[]
   }>(() => {
     if (componentType === 'cpu' && components.length > 0) {
-      const cores = [...new Set(components.map(cpu => cpu.specifications?.cores?.total).filter(v => v != null))].sort((a, b) => a - b)
-      const threads = [...new Set(components.map(cpu => cpu.specifications?.cores?.threads).filter(v => v != null))].sort((a, b) => a - b)
-      const tdps = [...new Set(components.map(cpu => cpu.metadata?.tdp?.base).filter(v => v != null))].sort((a, b) => a - b)
-      const l2Cache = [...new Set(components.map(cpu => cpu.specifications?.cache?.l2).filter(v => v != null))].sort((a, b) => a - b)
-      const l3Cache = [...new Set(components.map(cpu => cpu.specifications?.cache?.l3).filter(v => v != null))].sort((a, b) => a - b)
+      const cores = [...new Set(components.map(cpu => cpu.cores).filter(v => v != null))].sort((a, b) => a - b)
+      const threads = [...new Set(components.map(cpu => cpu.threads).filter(v => v != null))].sort((a, b) => a - b)
+      const tdps = [...new Set(components.map(cpu => cpu.tdp).filter(v => v != null))].sort((a, b) => a - b)
+      const l2Cache = [...new Set(components.map(cpu => cpu.cache?.l2).filter(v => v != null))].sort((a, b) => a - b)
+      const l3Cache = [...new Set(components.map(cpu => cpu.cache?.l3).filter(v => v != null))].sort((a, b) => a - b)
       
       return { cores, threads, tdps, l2Cache, l3Cache, capacity: [] }
     }
@@ -113,13 +113,14 @@ export function BuilderFilters({ componentType, onFilterChange, components }: Bu
   // Extract unique values from components
   const uniqueValues = useMemo(() => {
     if (componentType === 'cpu' && components.length > 0) {
-      const manufacturers = [...new Set(components.map(cpu => cpu.metadata?.name?.split(' ')[0]).filter(Boolean))]
-      const sockets = [...new Set(components.map(cpu => cpu.metadata?.socket).filter(Boolean))]
+      const manufacturers = [...new Set(components.map(cpu => cpu.manufacturer).filter(Boolean))]
+      const sockets = [...new Set(components.map(cpu => cpu.socket).filter(Boolean))]
       const hasGpu = [...new Set(components.map(cpu => 
-        cpu.specifications?.integratedGraphics?.model ? 'Yes' : 'No'
+        cpu.integratedGraphics?.model ? 'Yes' : 'No'
       ))]
+      const microarchitectures = [...new Set(components.map(cpu => cpu.microarchitecture).filter(Boolean))]
       
-      return { manufacturers, sockets, hasGpu }
+      return { manufacturers, sockets, hasGpu, microarchitectures }
     }
     if (componentType === 'motherboard' && components.length > 0) {
       const manufacturers = [...new Set(components.map(mb => mb.metadata?.manufacturer).filter(Boolean))]
@@ -145,7 +146,7 @@ export function BuilderFilters({ componentType, onFilterChange, components }: Bu
       
       return { manufacturers, types, interfaces, formFactors, capacities }
     }
-    return { manufacturers: [], sockets: [], hasGpu: [] }
+    return { manufacturers: [], sockets: [], hasGpu: [], microarchitectures: [] }
   }, [components, componentType])
 
   const updateFilter = (key: string, value: any) => {
@@ -396,32 +397,64 @@ export function BuilderFilters({ componentType, onFilterChange, components }: Bu
 
           {/* Integrated Graphics Filter */}
           {Array.isArray(uniqueValues.hasGpu) && uniqueValues.hasGpu.length > 0 && (
-            <div>
-              <Label className="text-sm font-medium mb-2 block">Integrated Graphics</Label>
-              <div className="space-y-2">
-                {uniqueValues.hasGpu.map((option) => (
-                  <div key={option} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`gpu-${option}`}
-                      checked={filters.hasGpu?.includes(option)}
-                      onCheckedChange={(checked) => {
-                        const current = filters.hasGpu || []
-                        const updated = checked
-                          ? [...current, option]
-                          : current.filter((o: string) => o !== option)
-                        updateFilter('hasGpu', updated)
-                      }}
-                    />
-                    <label htmlFor={`gpu-${option}`} className="text-sm cursor-pointer">
-                      {option}
-                    </label>
-                  </div>
-                ))}
+            <>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Integrated Graphics</Label>
+                <div className="space-y-2">
+                  {uniqueValues.hasGpu.map((option) => (
+                    <div key={option} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`gpu-${option}`}
+                        checked={filters.hasGpu?.includes(option)}
+                        onCheckedChange={(checked) => {
+                          const current = filters.hasGpu || []
+                          const updated = checked
+                            ? [...current, option]
+                            : current.filter((o: string) => o !== option)
+                          updateFilter('hasGpu', updated)
+                        }}
+                      />
+                      <label htmlFor={`gpu-${option}`} className="text-sm cursor-pointer">
+                        {option}
+                      </label>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+              <Separator />
+            </>
+          )}
+
+          {/* Microarchitecture Filter */}
+          {uniqueValues.microarchitectures && uniqueValues.microarchitectures.length > 0 && (
+            <>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Microarchitecture</Label>
+                <div className="space-y-2">
+                  {uniqueValues.microarchitectures.map((arch) => (
+                    <div key={arch} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`arch-${arch}`}
+                        checked={filters.microarchitecture?.includes(arch)}
+                        onCheckedChange={(checked) => {
+                          const current = filters.microarchitecture || []
+                          const updated = checked
+                            ? [...current, arch]
+                            : current.filter((a: string) => a !== arch)
+                          updateFilter('microarchitecture', updated)
+                        }}
+                      />
+                      <label htmlFor={`arch-${arch}`} className="text-sm cursor-pointer">
+                        {arch}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Separator />
+            </>
           )}
           <>
-            <Separator />
             <div>
               {ranges.l3Cache.values.length > 0 && (
                 <>
