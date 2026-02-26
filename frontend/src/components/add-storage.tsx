@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button"
 import { Plus, HardDrive, ArrowLeftRight } from "lucide-react"
 const apiUrl = "https://api.3dpc.me"
 import { BuilderFilters } from "@/components/builder-filters"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 
 
 interface AddStorageProps {
@@ -36,9 +36,10 @@ export default function AddStorage({ onStorageSelect, selectedStorage }: AddStor
     const [dialogOpen, setDialogOpen] = useState(false)
     const [selectedStorageModel, setSelectedStorageModel] = useState<any>(null)
     const [variantDialogOpen, setVariantDialogOpen] = useState(false)
+    const [isInitialLoad, setIsInitialLoad] = useState(true)
 
-    const fetchStorage = async () => {
-        setLoading(true)
+    const fetchStorage = async (isInitial: boolean = false) => {
+        if (isInitial) setLoading(true)
         setError(null)
         try {
             const response = await fetch(`${apiUrl}/storage`)
@@ -48,9 +49,21 @@ export default function AddStorage({ onStorageSelect, selectedStorage }: AddStor
         } catch (err) {
             setError(err instanceof Error ? err.message : "An error occured")
         } finally {
-            setLoading(false)
+            if (isInitial) setLoading(false)
         }
     }
+
+    useEffect(() => {
+        if (dialogOpen && isInitialLoad) {
+            setIsInitialLoad(false)
+            fetchStorage(true)
+        } else if (dialogOpen && !isInitialLoad) {
+            const timeoutId = setTimeout(() => {
+                 fetchStorage(false)
+            }, 300)
+            return () => clearTimeout(timeoutId)
+        }
+    }, [filters, dialogOpen])
 
     const filteredstorage = useMemo(() => {
         return storage.filter((s) => {
@@ -143,9 +156,11 @@ export default function AddStorage({ onStorageSelect, selectedStorage }: AddStor
                                                             e.currentTarget.nextElementSibling?.classList.remove("hidden")
                                                         }}
                                                     />
-                                                    <div className="hidden flex justify-center items-center flex-col gap-2">
-                                                        <HardDrive className="h-12 w-12 text-muted-foreground" />
-                                                        <p className="text-muted-foreground text-md">Image Coming Soon!</p>
+                                                    <div className="hidden">
+                                                        <div className="flex justify-center items-center flex-col gap-2">
+                                                            <HardDrive className="h-12 w-12 text-muted-foreground" />
+                                                            <p className="text-muted-foreground text-md">Image Coming Soon!</p>
+                                                        </div>
                                                     </div>
                                                 </ItemMedia>
                                             </ItemHeader>
@@ -212,9 +227,11 @@ export default function AddStorage({ onStorageSelect, selectedStorage }: AddStor
                                                             e.currentTarget.nextElementSibling?.classList.remove("hidden")
                                                         }}
                                                     />
-                                                    <div className="hidden flex justify-center items-center flex-col gap-2">
+                                                    <div className="hidden">
+                                                        <div className="flex justify-center items-center flex-col gap-2">
                                                         <HardDrive className="h-12 w-12 text-muted-foreground" />
                                                         <p className="text-muted-foreground text-md">Image Coming Soon!</p>
+                                                        </div>
                                                     </div>
                                         </ItemMedia>
                                     </ItemHeader>

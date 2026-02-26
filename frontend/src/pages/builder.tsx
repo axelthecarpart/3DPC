@@ -13,6 +13,7 @@ import AddStorage from "@/components/add-storage"
 import AddMotherboard from "@/components/add-motherboard"
 
 const apiUrl = "https://api.3dpc.me"
+const amazonAffiliateTag = "3dpc043-20"
 
 export default function BuilderPage() {
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -100,7 +101,7 @@ export default function BuilderPage() {
                                             </div>
                                             <div className="flex gap-2 mt-4">
                                                 <div className="flex-1"><AddCpu onCpuSelect={(cpu) => { setSelectedCpu(cpu); setCpuImageLoaded(false); }} selectedCpu={selectedCpu}/></div>
-                                                    <Button variant="default" onClick={() => selectedCpuSeller && window.open(selectedCpuSeller.url, '_blank')} disabled={!selectedCpuSeller}>
+                                                    <Button variant="default" onClick={() => selectedCpu && window.open(`https://www.amazon.com/dp/${selectedCpu.amazon_sku}?tag=${amazonAffiliateTag}`, '_blank')} disabled={!selectedCpu || !selectedCpu.amazon_sku}>
                                                         <ShoppingCart />Buy
                                                     </Button>
                                                     <Button variant="destructive" size="icon" onClick={() => { setSelectedCpu(null); setCpuImageLoaded(false); }}><X /></Button>

@@ -18,9 +18,9 @@ import {
 import { Button } from "@/components/ui/button"
 
 import { Plus, Gpu, ArrowLeftRight } from "lucide-react"
-const apiUrl = "http://localhost:5000"
+const apiUrl = "https://api.3dpc.me"
 import { BuilderFilters } from "@/components/builder-filters"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 
 
 interface AddGpuProps {
@@ -34,9 +34,10 @@ export default function AddGpu({ onGpuSelect, selectedGpu }: AddGpuProps) {
     const [error, setError] = useState<string | null>(null);
     const [filters, setFilters] = useState<Record<string, any>>({});
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-    const fetchGpus = async () => {
-        setLoading(true)
+    const fetchGpus = async (isInitial: boolean = false) => {
+        if (isInitial) setLoading(true)
         setError(null)
         try {
             const response = await fetch(`${apiUrl}/pc-parts/gpu`)
@@ -46,9 +47,21 @@ export default function AddGpu({ onGpuSelect, selectedGpu }: AddGpuProps) {
         } catch (err) {
             setError(err instanceof Error ? err.message: "An error occured")
         } finally {
-            setLoading(false)
+            if (isInitial) setLoading(false)
         }
     }
+
+    useEffect(() => {
+        if (dialogOpen && isInitialLoad) {
+            setIsInitialLoad(false)
+            fetchGpus(true)
+        } else if (dialogOpen && !isInitialLoad) {
+            const timeoutId = setTimeout(() => {
+                 fetchGpus(false)
+            }, 300)
+            return () => clearTimeout(timeoutId)
+        }
+    }, [filters, dialogOpen])
         
     const filteredGpus = useMemo(() => {
         return gpus.filter((gpu) => {
@@ -84,10 +97,7 @@ export default function AddGpu({ onGpuSelect, selectedGpu }: AddGpuProps) {
             }
             if (filters.interface && filters.interface.length > 0 && !filters.interface.includes(gpu.interface)) {
                 return false;
-            }
-            if (filters.color && filters.color.length > 0 && !filters.color.includes(gpu.color)) {
-                return false;
-            }
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             return true;
         });
     }, [gpus, filters]);

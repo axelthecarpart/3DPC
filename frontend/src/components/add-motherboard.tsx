@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button"
 import { Plus, ArrowLeftRight, CircuitBoard } from "lucide-react"
 const apiUrl = "https://api.3dpc.me" // Changed from 5000 to 3000
 import { BuilderFilters } from "@/components/builder-filters"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 
 
 interface AddMotherboardProps {
@@ -34,9 +34,10 @@ export default function AddMotherboard({ onMotherboardSelect, selectedMotherboar
     const [error, setError] = useState<string | null>(null);
     const [filters, setFilters] = useState<Record<string, any>>({});
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-    const fetchMotherboards = async () => {
-        setLoading(true)
+    const fetchMotherboards = async (isInitial: boolean = false) => {
+        if (isInitial) setLoading(true)
         setError(null)
         try {
             const response = await fetch(`${apiUrl}/motherboards`)
@@ -46,9 +47,21 @@ export default function AddMotherboard({ onMotherboardSelect, selectedMotherboar
         } catch (err) {
             setError(err instanceof Error ? err.message: "An error occured")
         } finally {
-            setLoading(false)
+            if (isInitial) setLoading(false)
         }
     }
+
+    useEffect(() => {
+        if (dialogOpen && isInitialLoad) {
+            setIsInitialLoad(false)
+            fetchMotherboards(true)
+        } else if (dialogOpen && !isInitialLoad) {
+            const timeoutId = setTimeout(() => {
+                 fetchMotherboards(false)
+            }, 300)
+            return () => clearTimeout(timeoutId)
+        }
+    }, [filters, dialogOpen])
         
     const filteredMotherboards = useMemo(() => {
         return motherboards.filter((motherboard) => {
@@ -140,9 +153,11 @@ export default function AddMotherboard({ onMotherboardSelect, selectedMotherboar
                                                             e.currentTarget.nextElementSibling?.classList.remove('hidden');
                                                         }}
                                                     />
-                                                    <div className="hidden flex justify-center items-center flex-col gap-2">
+                                                    <div className="hidden">
+                                                        <div className="flex justify-center items-center flex-col gap-2">
                                                         <CircuitBoard className="h-12 w-12 text-muted-foreground" />
                                                         <p className="text-muted-foreground text-md">Image Coming Soon!</p>
+                                                        </div>
                                                     </div>
                                                 </ItemMedia>
                                             </ItemHeader>

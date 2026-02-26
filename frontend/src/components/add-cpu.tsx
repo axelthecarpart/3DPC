@@ -36,9 +36,10 @@ export default function AddCpu({ onCpuSelect, selectedCpu }: AddCpuProps) {
     const [error, setError] = useState<string | null>(null);
     const [filters, setFilters] = useState<Record<string, any>>({});
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-    const fetchCPUs = async (currentFilters: Record<string, any>) => {
-        setLoading(true)
+    const fetchCPUs = async (currentFilters: Record<string, any>, isInitial: boolean = false) => {
+        if (isInitial) setLoading(true)
         setError(null)
         try {
             const url = `${apiUrl}/cpus`
@@ -56,14 +57,17 @@ export default function AddCpu({ onCpuSelect, selectedCpu }: AddCpuProps) {
         } catch (err) {
             setError(err instanceof Error ? err.message: "An error occured")
         } finally {
-            setLoading(false)
+            if (isInitial) setLoading(false)
         }
     }
 
     useEffect(() => {
-        if (dialogOpen) {
+        if (dialogOpen && isInitialLoad) {
+            setIsInitialLoad(false)
+            fetchCPUs(filters, true)
+        } else if (dialogOpen && !isInitialLoad) {
             const timeoutId = setTimeout(() => {
-                 fetchCPUs(filters)
+                 fetchCPUs(filters, false)
             }, 300)
             return () => clearTimeout(timeoutId)
         }
