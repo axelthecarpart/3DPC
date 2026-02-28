@@ -26,9 +26,10 @@ import { useState, useMemo, useEffect } from "react"
 interface AddStorageProps {
     onStorageSelect: (storage: any) => void
     selectedStorage: any
+    hasExisting?: boolean
 }
 
-export default function AddStorage({ onStorageSelect, selectedStorage }: AddStorageProps) {
+export default function AddStorage({ onStorageSelect, selectedStorage, hasExisting }: AddStorageProps) {
     const [storage, setstorage] = useState<any[]>([])
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -45,7 +46,7 @@ export default function AddStorage({ onStorageSelect, selectedStorage }: AddStor
             const response = await fetch(`${apiUrl}/storage`)
             if (!response.ok) throw new Error("Failed to fetch Storage")
             const data = await response.json()
-            setstorage((Array.isArray(data) ? data.map((item: any) => item.data) : []) || [])
+            setstorage(Array.isArray(data) ? data : [])
         } catch (err) {
             setError(err instanceof Error ? err.message : "An error occured")
         } finally {
@@ -73,10 +74,9 @@ export default function AddStorage({ onStorageSelect, selectedStorage }: AddStor
             if (filters.type && filters.type.length > 0 && !filters.type.includes(s.type)) return false
             // interface (PCIe, SATA, etc.)
             if (filters.interface && filters.interface.length > 0) {
-                const hasMatchingInterface = s.interface?.some((iface: string) => filters.interface.includes(iface))
-                if (!hasMatchingInterface) return false
+                if (!filters.interface.includes(s.interface)) return false
             }
-            if (filters.formFactor && filters.formFactor.length > 0 && !filters.formFactor.includes(s.formFactor)) return false
+            if (filters.formFactor && filters.formFactor.length > 0 && !filters.formFactor.includes(s.form_factor)) return false
             
             // Capacity filter (range)
             if (filters.capacity && filters.capacity.length === 2) {
@@ -112,7 +112,12 @@ export default function AddStorage({ onStorageSelect, selectedStorage }: AddStor
         >
             <DialogTrigger asChild>
                 <Button variant="outline" className="w-1/2">
-                    {selectedStorage ? (
+                    {hasExisting ? (
+                        <>
+                            <Plus />
+                            Select additional Storage
+                        </>
+                    ) : selectedStorage ? (
                         <>
                             <ArrowLeftRight />
                             Replace
@@ -149,7 +154,7 @@ export default function AddStorage({ onStorageSelect, selectedStorage }: AddStor
                                                 <ItemMedia className="h-full flex items-center justify-center">
                                                     <img
                                                         src={`${apiUrl}/data/storage/images/${s.id}.png`}
-                                                        alt={s.metadata?.name}
+                                                        alt={s.name}
                                                         className="h-24 object-contain"
                                                         onError={(e) => {
                                                             e.currentTarget.style.display = "none"
@@ -178,8 +183,8 @@ export default function AddStorage({ onStorageSelect, selectedStorage }: AddStor
                                                         })()}
                                                     </div>
                                                     <div className="truncate">Type: {s.type}</div>
-                                                    <div className="truncate">Interface: {s.interface?.join(', ')}</div>
-                                                    <div className="truncate">Form Factor: {s.formFactor || 'N/A'}</div>
+                                                    <div className="truncate">Interface: {s.interface}</div>
+                                                    <div className="truncate">Form Factor: {s.form_factor || 'N/A'}</div>
                                                 </div>
                                             </ItemContent>
                                             <ItemFooter className="p-4 pt-0">
@@ -238,8 +243,9 @@ export default function AddStorage({ onStorageSelect, selectedStorage }: AddStor
                                     <ItemContent className="p-4">
                                         <ItemTitle className="line-clamp-2 mb-2">Capacity: {formatCapacity(variant.capacityGB)}</ItemTitle>
                                             <div className="text-sm text-muted-foreground space-y-1">
-                                                <div className="truncate">Cache: {variant.cacheMB} MB</div>
-                                            </div>
+                                                <div className="truncate">Cache: {variant.cacheMB ? `${variant.cacheMB} MB` : 'N/A'}</div>
+                                                <div className="truncate">Read: {variant.performance?.sequencial?.readMBps ? `${variant.performance.sequencial.readMBps} MB/s` : 'N/A'}</div>
+                                                <div className="truncate">Write: {variant.performance?.sequencial?.writeMBps ? `${variant.performance.sequencial.writeMBps} MB/s` : 'N/A'}</div>                                            </div>
                                     </ItemContent>
                                     <ItemFooter className="p-4 pt-0">
                                         <Button variant="outline" className="w-auto right-0" onClick={() => handleAddStorage(selectedStorageModel, variant)}>

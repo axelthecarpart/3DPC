@@ -5,7 +5,7 @@ export function Footer() {
     return (
         <footer className="w-full border-t bg-background/50 backdrop-blur-sm py-4 text-center text-sm">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
-                <div className="text-left">
+                <div>
                     <h1 className="text-lg font-bold">3DPC</h1>
                     <Separator className="my-2" />
                     <br></br>

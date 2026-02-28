@@ -98,9 +98,8 @@ export default function AddCpu({ onCpuSelect, selectedCpu }: AddCpuProps) {
                 if (baseTdp < min || baseTdp > max) return false;
             }
             // Integrated Graphics filter
-            if (filters.hasGpu && filters.hasGpu.length > 0) {
-                const hasGpu = cpu.graphics ? "Yes" : "No";
-                if (!filters.hasGpu.includes(hasGpu)) return false;
+            if (filters.hasGpu) {
+                if (!cpu.graphics) return false;
             }
             if (filters.l3Cache && Array.isArray(filters.l3Cache)) {
                 const [min, max] = filters.l3Cache;
@@ -111,6 +110,9 @@ export default function AddCpu({ onCpuSelect, selectedCpu }: AddCpuProps) {
                 const [min, max] = filters.l2Cache;
                 const l2 = cpu.l2_cache || 0;
                 if (l2 < min || l2 > max) return false;
+            }
+            if (filters.socket && filters.socket.length > 0 && !filters.socket.includes(cpu.socket)) {
+                return false;
             }
             return true;
         });
@@ -193,11 +195,11 @@ export default function AddCpu({ onCpuSelect, selectedCpu }: AddCpuProps) {
                                                     <div className="truncate">
                                                         {cpu.base_clock} GHz Base / {cpu.boost_clock} GHz Boost
                                                     </div>
-                                                    <div className="truncate">{cpu.base_tdp}W TDP</div>
+                                                    <div className="truncate">Socket {cpu.socket}</div>
                                                 </div>
                                             </ItemContent>
                                             <ItemFooter className="p-4 pt-0">
-                                                <Button variant="outline" className="w-auto right-0" onClick={() => handleAddCpu(cpu)}>Add</Button>
+                                                <Button variant="outline" size="default" className="w-auto right-0" onClick={() => handleAddCpu(cpu)}><Plus />Add</Button>
                                             </ItemFooter>
                                         </Item>
                                         ))}
